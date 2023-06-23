@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">Lectus</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="email">E-mail</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="search">Search</string>
+    <string name="add_my_book">Add my book</string>
+    <string name="title">Title</string>
+    <string name="authors">Authors</string>
+    <string name="publisher">Publisher</string>
+    <string name="description">Description</string>
+    <string name="page_count">Page count</string>
+    <string name="photo">Photo</string>
+    <string name="add">Add</string>
+    <string name="login_route">Login</string>
+    <string name="register_route">Register</string>
+    <string name="main_screen_route">Main Screen</string>
+    <string name="my_library_route">My Library</string>
+    <string name="add_book_route">Add Book</string>
+    <string name="goals_route">Goals</string>
+    <string name="settings_route">Settings</string>
+    <string name="search_route">Search</string>
+    <string name="add_my_book_route">Add my book</string>
+    <string name="book_img_description">Image of the book cover</string>
+    <string name="book_details_screen_route">Book details</string>
+</resources>
