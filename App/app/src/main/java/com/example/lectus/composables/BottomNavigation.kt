@@ -1,6 +1,8 @@
 package com.example.lectus.composables
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -16,6 +18,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.LibraryBooks
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -24,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -37,8 +39,8 @@ import com.example.lectus.getFontFamily
 import com.example.lectus.screens.AddBookScreen
 import com.example.lectus.screens.GoalsScreen
 import com.example.lectus.screens.MyLibraryScreen
-import com.example.lectus.screens.SearchBookScreen
 import com.example.lectus.screens.SettingsScreen
+import com.example.lectus.viewmodels.ThemeViewModel
 
 
 sealed class BottomNavigationScreens(val route: String, @StringRes val resourceId: Int, val icon: ImageVector) {
@@ -48,9 +50,10 @@ sealed class BottomNavigationScreens(val route: String, @StringRes val resourceI
     object Settings : BottomNavigationScreens("Settings", R.string.settings_route, Icons.Filled.Settings)
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainScreen() {
+fun MainScreen(themeViewModel: ThemeViewModel, mainNavController: NavHostController) {
 
     val navController = rememberNavController()
 
@@ -66,15 +69,19 @@ fun MainScreen() {
         },
     ) {
         Column(Modifier.fillMaxSize()) {
-            MainScreenNavigationConfigurations(navController)
+            MainScreenNavigationConfigurations(navController, themeViewModel, mainNavController)
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun MainScreenNavigationConfigurations(
-    navController: NavHostController
+    navController: NavHostController,
+    themeViewModel: ThemeViewModel,
+    mainNavController: NavHostController,
 ) {
+
     NavHost(navController, startDestination = BottomNavigationScreens.MyLibrary.route) {
         composable(BottomNavigationScreens.MyLibrary.route) {
             MyLibraryScreen()
@@ -86,7 +93,7 @@ private fun MainScreenNavigationConfigurations(
             GoalsScreen()
         }
         composable(BottomNavigationScreens.Settings.route) {
-            SettingsScreen()
+            SettingsScreen(mainNavController, themeViewModel)
         }
     }
 }
@@ -100,9 +107,9 @@ private fun BottomNavigation(
     Box(
         contentAlignment = Alignment.BottomCenter
     ) {
-        Row(
-        ) {
-            NavigationBar(containerColor = colorResource(id = R.color.tan)
+        Row{
+            NavigationBar(
+                containerColor = MaterialTheme.colorScheme.primary
             ) {
                 val currentRoute = currentRoute(navController)
                 items.forEach { screen ->
@@ -110,23 +117,23 @@ private fun BottomNavigation(
                         icon = {
                             Box(modifier =
                             if (currentRoute == screen.route) {
-                                Modifier.background(colorResource(id = R.color.champagne))
+                                Modifier.background(MaterialTheme.colorScheme.background)
                             }
                             else {
-                                Modifier.background(colorResource(id = R.color.tan))
+                                Modifier.background(MaterialTheme.colorScheme.primary)
                             }
                             ){
                                 Icon(
                                     screen.icon,
                                     contentDescription = null,
-                                    tint = colorResource(id = R.color.caput_mortuum)
+                                    tint = MaterialTheme.colorScheme.tertiary
                                 )
                             }
                         },
                         label = {
                             Text(stringResource(id = screen.resourceId),
                                 fontFamily = getFontFamily(),
-                                color = colorResource(id = R.color.caput_mortuum),
+                                color = MaterialTheme.colorScheme.tertiary,
                                 modifier = Modifier.padding(top = 2.dp))
                         },
                         selected = currentRoute == screen.route,
@@ -136,7 +143,7 @@ private fun BottomNavigation(
                             }
                         },
                         colors = NavigationBarItemDefaults.colors(
-                            indicatorColor = colorResource(id = R.color.champagne)
+                            indicatorColor = MaterialTheme.colorScheme.background
                         )
 
                     )

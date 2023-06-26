@@ -18,8 +18,8 @@ class RegisterViewModel @Inject constructor(
 ): ViewModel() {
     var registerResponse by mutableStateOf<SignUpResponse>(Response.Success(false))
         private set
-    fun signUpWithEmailAndPassword(email: String, password: String) = viewModelScope.launch {
+    fun signUpWithEmailAndPassword(email: String, password: String, username: String) = viewModelScope.launch {
         registerResponse = Response.Loading
-        registerResponse = repo.firebaseSignUpWithEmailAndPassword(email, password)
+        registerResponse = repo.firebaseSignUpWithEmailAndPassword(email, password, username)
     }
 }

@@ -4,7 +4,8 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast.LENGTH_LONG
 import android.widget.Toast.makeText
-const val TAG = "AppTag"
+import com.example.lectus.data.TAG
+
 
 class Utils {
     companion object {

@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.lectus.bookapi.BooksRepository
 import com.example.lectus.data.Book
 import kotlinx.coroutines.launch
-import retrofit2.http.Query
 
 
 class SearchBookViewModel(private val repo: BooksRepository): ViewModel() {

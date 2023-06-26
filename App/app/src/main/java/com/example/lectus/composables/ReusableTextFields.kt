@@ -1,8 +1,6 @@
 package com.example.lectus.composables
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
@@ -22,9 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -39,7 +35,6 @@ import com.example.lectus.R
 fun CustomOutlinedTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    label: String = "",
     leadingIconImageVector: ImageVector? = null,
     leadingIconDescription: String = "",
     isPasswordField: Boolean = false,
@@ -56,11 +51,11 @@ fun CustomOutlinedTextField(
         modifier = Modifier
             .requiredWidth(325.dp)
             .padding(start = 15.dp, end = 15.dp)
-            .background(colorResource(id = R.color.champagne), shape = RoundedCornerShape(10.dp)),
+            .background(MaterialTheme.colorScheme.background, shape = RoundedCornerShape(10.dp)),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            containerColor = colorResource(id = R.color.champagne),
-            unfocusedBorderColor = colorResource(id = R.color.caput_mortuum),
-            focusedBorderColor = colorResource(id = R.color.caput_mortuum)),
+            containerColor = MaterialTheme.colorScheme.background,
+            unfocusedBorderColor = MaterialTheme.colorScheme.tertiary,
+            focusedBorderColor = MaterialTheme.colorScheme.tertiary),
         singleLine = false,
         shape = RoundedCornerShape(10.dp),
         textStyle = TextStyle(fontSize = 12.sp),
@@ -69,19 +64,20 @@ fun CustomOutlinedTextField(
                 Icon(
                     imageVector = vector,
                     contentDescription = leadingIconDescription,
-                    tint = if (showError) MaterialTheme.colorScheme.error else colorResource(id = R.color.caput_mortuum)
+                    tint = if (showError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.tertiary
                 )
             }
         },
         isError = showError,
         trailingIcon = {
-            if (showError && !isPasswordField) Icon(imageVector = Icons.Filled.Error, contentDescription = "show error icon" )
+            if (showError && !isPasswordField)
+                Icon(imageVector = Icons.Filled.Error, contentDescription = stringResource(id = R.string.show_error))
             if(isPasswordField){
                 IconButton(onClick = { onVisibilityChange(!isPasswordVisible) }) {
                     Icon(
                         imageVector = if(isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                        contentDescription = "Toggle password visibility",
-                    tint = colorResource(id = R.color.caput_mortuum)
+                        contentDescription = stringResource(id = R.string.toggle_visibility),
+                    tint = MaterialTheme.colorScheme.tertiary
                     )
                 }
             }

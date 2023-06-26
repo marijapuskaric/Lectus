@@ -3,11 +3,13 @@ package com.example.lectus.screens
 import android.content.ContentResolver
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,12 +22,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.RadioButton
+import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -35,9 +40,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,7 +55,6 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -62,30 +64,44 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.lectus.R
 import com.example.lectus.composables.CustomOutlinedTextField
-import com.example.lectus.composables.Header
 import com.example.lectus.getFontFamily
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import com.example.lectus.db.addImageToFirebaseStorage
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 import java.io.InputStream
 import kotlinx.coroutines.launch
 
 @Composable
 fun AddMyBookScreen() {
     val focusManager = LocalFocusManager.current
-
+    val context = LocalContext.current
+    val db = Firebase.firestore
+    val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
     var title by rememberSaveable { mutableStateOf("") }
     var authors by rememberSaveable { mutableStateOf("") }
     var publisher by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
     var pageCount by rememberSaveable { mutableStateOf("") }
-    var selectedImage by remember { mutableStateOf<ImageBitmap?>(null) }
+    var selectedImage by remember { mutableStateOf<Uri?>(null) }
+    var selectedImageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+    val statusOptions = listOf(
+        stringResource(id = R.string.to_read),
+        stringResource(id = R.string.reading),
+        stringResource(id = R.string.finished_reading))
+    var selectedStatus by remember { mutableStateOf("") }
+    val storage = FirebaseStorage.getInstance()
     fun deleteImage() {
         selectedImage = null
+        selectedImageBitmap = null
     }
     Column(
         Modifier
             .fillMaxSize()
-            .background(colorResource(id = R.color.champagne))) {
+            .background(MaterialTheme.colorScheme.background)) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -98,7 +114,7 @@ fun AddMyBookScreen() {
                 modifier = Modifier
                     .padding(32.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = colorResource(id = R.color.tan)),
+                    containerColor = MaterialTheme.colorScheme.primary),
             ){
                 Column(
                     modifier = Modifier
@@ -110,7 +126,7 @@ fun AddMyBookScreen() {
                         fontFamily = getFontFamily(),
                         fontSize = 25.sp,
                         fontWeight = FontWeight.Bold,
-                        color = colorResource(id = R.color.caput_mortuum),
+                        color = MaterialTheme.colorScheme.tertiary,
                         text = stringResource(id = R.string.add_my_book),
                         modifier = Modifier
                             .padding(bottom = 35.dp, top = 35.dp),
@@ -118,7 +134,7 @@ fun AddMyBookScreen() {
                     Text(
                         fontFamily = getFontFamily(),
                         fontSize = 10.sp,
-                        color = colorResource(id = R.color.caput_mortuum),
+                        color = MaterialTheme.colorScheme.tertiary,
                         text = stringResource(id = R.string.title),
                         modifier = Modifier
                             .padding(start = 20.dp)
@@ -129,7 +145,6 @@ fun AddMyBookScreen() {
                     CustomOutlinedTextField(
                         value = title,
                         onValueChange = {title = it},
-                        label = stringResource(id = R.string.title),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Next
@@ -141,7 +156,7 @@ fun AddMyBookScreen() {
                     Text(
                         fontFamily = getFontFamily(),
                         fontSize = 10.sp,
-                        color = colorResource(id = R.color.caput_mortuum),
+                        color = MaterialTheme.colorScheme.tertiary,
                         text = stringResource(id = R.string.authors),
                         modifier = Modifier
                             .padding(start = 20.dp, top = 25.dp)
@@ -153,7 +168,6 @@ fun AddMyBookScreen() {
                     CustomOutlinedTextField(
                         value = authors,
                         onValueChange = {authors = it},
-                        label = stringResource(id = R.string.authors),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Next
@@ -165,7 +179,7 @@ fun AddMyBookScreen() {
                     Text(
                         fontFamily = getFontFamily(),
                         fontSize = 10.sp,
-                        color = colorResource(id = R.color.caput_mortuum),
+                        color = MaterialTheme.colorScheme.tertiary,
                         text = stringResource(id = R.string.description),
                         modifier = Modifier
                             .padding(start = 20.dp, top = 25.dp)
@@ -177,7 +191,6 @@ fun AddMyBookScreen() {
                     CustomOutlinedTextField(
                         value = description,
                         onValueChange = {description= it},
-                        label = stringResource(id = R.string.description),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Next
@@ -189,7 +202,7 @@ fun AddMyBookScreen() {
                     Text(
                         fontFamily = getFontFamily(),
                         fontSize = 10.sp,
-                        color = colorResource(id = R.color.caput_mortuum),
+                        color = MaterialTheme.colorScheme.tertiary,
                         text = stringResource(id = R.string.publisher),
                         modifier = Modifier
                             .padding(start = 20.dp, top = 25.dp)
@@ -201,7 +214,6 @@ fun AddMyBookScreen() {
                     CustomOutlinedTextField(
                         value = publisher,
                         onValueChange = {publisher = it},
-                        label = stringResource(id = R.string.publisher),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Next
@@ -213,7 +225,7 @@ fun AddMyBookScreen() {
                     Text(
                         fontFamily = getFontFamily(),
                         fontSize = 10.sp,
-                        color = colorResource(id = R.color.caput_mortuum),
+                        color = MaterialTheme.colorScheme.tertiary,
                         text = stringResource(id = R.string.page_count),
                         modifier = Modifier
                             .padding(start = 20.dp, top = 25.dp)
@@ -225,7 +237,6 @@ fun AddMyBookScreen() {
                     CustomOutlinedTextField(
                         value = pageCount,
                         onValueChange = {pageCount = it},
-                        label = stringResource(id = R.string.page_count),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Done
@@ -237,7 +248,7 @@ fun AddMyBookScreen() {
                     Text(
                         fontFamily = getFontFamily(),
                         fontSize = 10.sp,
-                        color = colorResource(id = R.color.caput_mortuum),
+                        color = MaterialTheme.colorScheme.tertiary,
                         text = stringResource(id = R.string.photo),
                         modifier = Modifier
                             .padding(start = 20.dp, top = 25.dp)
@@ -247,17 +258,84 @@ fun AddMyBookScreen() {
 
                         )
                     AddImageField(
-                        image = selectedImage,
-                        onImageSelected = { imageBitmap -> selectedImage = imageBitmap },
-                        onDeleteImage = { deleteImage() }
+                        imageUri = selectedImage,
+                        onImageSelected = { uri -> selectedImage = uri },
+                        image = selectedImageBitmap,
+                        onImageSelectedBitmap = { imageBitmap -> selectedImageBitmap = imageBitmap },
+                        onDeleteImage = { deleteImage() },
                     )
+
+                    Text(
+                        fontFamily = getFontFamily(),
+                        fontSize = 10.sp,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        text = stringResource(id = R.string.select_reading_status),
+                        modifier = Modifier
+                            .padding(start = 20.dp, top = 25.dp, bottom = 10.dp)
+                            .requiredWidth(IntrinsicSize.Max)
+                            .align(Alignment.Start),
+                        textAlign = TextAlign.Left,
+
+                        )
+
+                    statusOptions.forEach { status ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { selectedStatus = status }
+                                .padding(start = 30.dp, top = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = selectedStatus == status,
+                                onClick = { selectedStatus = status },
+                                modifier = Modifier
+                                    .padding(end = 10.dp)
+                                    .size(10.dp),
+                                colors = RadioButtonDefaults.colors(
+                                    selectedColor = MaterialTheme.colorScheme.tertiary,
+                                    unselectedColor = MaterialTheme.colorScheme.tertiary
+                                )
+                            )
+                            androidx.compose.material.Text(
+                                text = status,
+                                fontFamily = getFontFamily(),
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.tertiary,
+                            )
+                        }
+                    }
+
                     Spacer(modifier = Modifier.height(30.dp))
                     Button(
-                        onClick = {},
-                        colors = ButtonDefaults.buttonColors(colorResource(id = R.color.redwood)),
+                        onClick = {
+                            val authorNames: List<String> = authors.split(",").map { it.trim() }.toList()
+                            var pageCountLong: Long? = null
+                            if (currentUserUid != null) {
+                                if (pageCount != "")
+                                {
+                                    pageCountLong = pageCount.toLong()
+                                }
+                                addImageToFirebaseStorage(
+                                    selectedImage,
+                                    storage,
+                                    title,
+                                    authorNames,
+                                    description,
+                                    publisher,
+                                    pageCountLong,
+                                    selectedStatus,
+                                    currentUserUid,
+                                    db,
+                                    context
+                                )
+                            }
+
+                        },
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
 
                     ) {
-                        Text(fontFamily = getFontFamily(), text = stringResource(id = R.string.add), color = colorResource(id = R.color.champagne))
+                        Text(fontFamily = getFontFamily(), text = stringResource(id = R.string.add), color = MaterialTheme.colorScheme.background)
                     }
                     Spacer(modifier = Modifier.height(30.dp))
                 }
@@ -271,9 +349,11 @@ fun AddMyBookScreen() {
 
 @Composable
 fun AddImageField(
+    imageUri: Uri?,
+    onImageSelected: (Uri) -> Unit,
     image: ImageBitmap?,
-    onImageSelected: (ImageBitmap) -> Unit,
-    onDeleteImage: () -> Unit
+    onImageSelectedBitmap: (ImageBitmap) -> Unit,
+    onDeleteImage: () -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -283,7 +363,8 @@ fun AddImageField(
             result?.let { uri ->
                 scope.launch {
                     val imageBitmap = loadBitmapFromUri(context.contentResolver, uri)
-                    onImageSelected(imageBitmap)
+                    onImageSelectedBitmap(imageBitmap)
+                    onImageSelected(uri)
                 }
             }
         }
@@ -296,20 +377,21 @@ fun AddImageField(
                 .width(300.dp)
                 .border(
                     1.dp,
-                    color = colorResource(id = R.color.caput_mortuum),
+                    color = MaterialTheme.colorScheme.tertiary,
                     shape = RoundedCornerShape(10.dp)
                 )
                 .background(
-                    colorResource(id = R.color.champagne),
+                    MaterialTheme.colorScheme.background,
                     shape = RoundedCornerShape(10.dp)
                 )
                 .padding(10.dp)
         ) {
-            if (image != null) {
+            if (imageUri != null && image != null) {
                 Row(Modifier.fillMaxSize()) {
+                    Log.d("IMAGE", imageUri.toString())
                     Image(
                         painter = BitmapPainter(image),
-                        contentDescription = "Selected Image",
+                        contentDescription = stringResource(id = R.string.select_image),
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
@@ -320,8 +402,8 @@ fun AddImageField(
                     ) {
                         Icon(
                             Icons.Default.Delete,
-                            contentDescription = "Delete Image",
-                            tint = colorResource(id = R.color.caput_mortuum)
+                            contentDescription = stringResource(id = R.string.delete_image),
+                            tint = MaterialTheme.colorScheme.tertiary
                         )
                     }
                 }
@@ -334,8 +416,8 @@ fun AddImageField(
                 ) {
                     Icon(
                         Icons.Default.Add,
-                        contentDescription = "Add Image",
-                        tint = colorResource(id = R.color.caput_mortuum)
+                        contentDescription = stringResource(id = R.string.add_image),
+                        tint = MaterialTheme.colorScheme.tertiary
                     )
                 }
             }
@@ -343,10 +425,12 @@ fun AddImageField(
     }
 }
 
-private suspend fun loadBitmapFromUri(contentResolver: ContentResolver, uri: Uri): ImageBitmap {
+private fun loadBitmapFromUri(contentResolver: ContentResolver, uri: Uri): ImageBitmap {
     val inputStream: InputStream? = contentResolver.openInputStream(uri)
     val bitmap = inputStream?.use { input ->
         BitmapFactory.decodeStream(input)
     }
     return bitmap?.asImageBitmap() ?: throw IllegalStateException("Failed to load bitmap from Uri: $uri")
 }
+
+

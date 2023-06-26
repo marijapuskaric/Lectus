@@ -14,17 +14,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ImageNotSupported
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -32,38 +30,58 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.example.lectus.R
-import com.example.lectus.composables.Header
 import com.example.lectus.data.Book
+import com.example.lectus.data.BookData
 import com.example.lectus.getFontFamily
 
 @Composable
-fun BookDetailsScreen(book: Book, navigateBack: () -> Unit) {
-    var desctiption: String
-    var pageCount: String
-    var publisher: String
-    if (book.volumeInfo.description != null)
+fun  <T> BookDetailsScreen(book: T, navigateBack: () -> Unit, readingStatus: Boolean) {
+    var title  = "-"
+    var authors: String? = "-"
+    var description = "-"
+    var pageCount = "-"
+    var publisher = "-"
+    var image: String? = null
+    var status = "-"
+    if (book is BookData)
     {
-        desctiption = book.volumeInfo.description
+        title = book.title
+        authors = book.authors?.joinToString(", ")
+        if (book.description != null)
+        {
+            description = book.description
+        }
+        if (book.pageCount != null)
+        {
+            pageCount = book.pageCount.toString()
+        }
+        if (book.publisher != null)
+        {
+            publisher = book.publisher
+        }
+        image = book.image
+        status = book.status
     }
-    else
+    if (book is Book)
     {
-        desctiption = "-"
+        title = book.volumeInfo.title
+        authors = book.volumeInfo.authors?.joinToString(", ")
+        if (book.volumeInfo.description != null)
+        {
+            description = book.volumeInfo.description
+        }
+        if (book.volumeInfo.pageCount != null)
+        {
+            pageCount = book.volumeInfo.pageCount.toString()
+        }
+        if (book.volumeInfo.publisher != null)
+        {
+            publisher = book.volumeInfo.publisher
+        }
+        image = book.volumeInfo.imageLinks?.thumbnail
     }
-    if (book.volumeInfo.pageCount != null)
-    {
-        pageCount = book.volumeInfo.pageCount.toString()
-    }
-    else
-    {
-        pageCount = "-"
-    }
-    if (book.volumeInfo.publisher != null)
-    {
-        publisher = book.volumeInfo.publisher
-    }
-    else
-    {
-        publisher = "-"
+    if (authors == null) {
+        authors = "-"
     }
 
     Column(Modifier.fillMaxSize()) {
@@ -73,13 +91,17 @@ fun BookDetailsScreen(book: Book, navigateBack: () -> Unit) {
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = 80.dp)
         ) {
-            Column() {
-                Row(modifier = Modifier.fillMaxWidth().padding(10.dp)) {
+            Column {
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)) {
                     Icon(
                         Icons.Filled.ArrowBack,
                         contentDescription = null,
-                        tint = colorResource(id = R.color.caput_mortuum),
-                        modifier = Modifier.width(40.dp).clickable { navigateBack()  }
+                        tint = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier
+                            .width(40.dp)
+                            .clickable { navigateBack() }
                     )
 
                 }
@@ -89,12 +111,15 @@ fun BookDetailsScreen(book: Book, navigateBack: () -> Unit) {
                         .padding(vertical = 20.dp)
                         .fillMaxWidth()
                 ) {
-                    if (book.volumeInfo.imageLinks != null)
+                    if (image != null)
                     {
-                        val url: StringBuilder = StringBuilder(book.volumeInfo.imageLinks?.thumbnail)
-                        url.insert(4, "s")
+                        val url: String = if (image.startsWith("http://")) {
+                            "https://" + image.substring(7)
+                        } else {
+                            image
+                        }
                         Image(
-                            painter = rememberImagePainter(data = url.toString()),
+                            painter = rememberImagePainter(data = url),
                             contentDescription = stringResource(id = R.string.book_img_description),
                             contentScale = ContentScale.Fit,
                             modifier = Modifier
@@ -106,12 +131,12 @@ fun BookDetailsScreen(book: Book, navigateBack: () -> Unit) {
                         Box(
                             modifier = Modifier
                                 .size(300.dp)
-                                .background(colorResource(id = R.color.khaki)),
+                                .background(MaterialTheme.colorScheme.surface),
                         ) {
                             Icon(
                                 Icons.Filled.ImageNotSupported,
                                 contentDescription = null,
-                                tint = colorResource(id = R.color.caput_mortuum),
+                                tint = MaterialTheme.colorScheme.tertiary,
                                 modifier = Modifier
                                     .align(Alignment.Center)
                                     .size(70.dp, 200.dp),
@@ -127,9 +152,9 @@ fun BookDetailsScreen(book: Book, navigateBack: () -> Unit) {
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = book.volumeInfo.title,
+                        text = title,
                         style = TextStyle(
-                            color = colorResource(id = R.color.caput_mortuum),
+                            color = MaterialTheme.colorScheme.tertiary,
                             fontFamily = getFontFamily(),
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold
@@ -146,37 +171,38 @@ fun BookDetailsScreen(book: Book, navigateBack: () -> Unit) {
                     {
                         Row(Modifier.padding(bottom = 5.dp)) {
                             Text(
-                                text = "Authors: ",
+                                text = stringResource(id = R.string.details_authors),
                                 style = TextStyle(
-                                    color = colorResource(id = R.color.caput_mortuum),
+                                    color = MaterialTheme.colorScheme.tertiary,
                                     fontFamily = getFontFamily(),
                                     fontSize = 16.sp
+                                ),
+                                modifier = Modifier.padding(end = 5.dp)
+                            )
+                            Text(
+                                text = authors,
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+                                    fontFamily = getFontFamily(),
+                                    color = MaterialTheme.colorScheme.tertiary
                                 )
                             )
-                            book.volumeInfo.authors?.let {
-                                    authors ->
-                                Text(text = authors.joinToString(),
-                                    style = TextStyle(
-                                        fontSize = 16.sp,
-                                        fontFamily = getFontFamily(),
-                                        color = colorResource(id = R.color.caput_mortuum)
-                                    )
-                                )
-                            }
+
                         }
                         Row(Modifier.padding(bottom = 5.dp)) {
                             Text(
-                                text = "Description: ",
+                                text = stringResource(id = R.string.details_description),
                                 style = TextStyle(
-                                    color = colorResource(id = R.color.caput_mortuum),
+                                    color = MaterialTheme.colorScheme.tertiary,
                                     fontFamily = getFontFamily(),
                                     fontSize = 16.sp
-                                )
+                                ),
+                                modifier = Modifier.padding(end = 5.dp)
                             )
                             Text(
-                                text = desctiption,
+                                text = description,
                                 style = TextStyle(
-                                    color = colorResource(id = R.color.caput_mortuum),
+                                    color = MaterialTheme.colorScheme.tertiary,
                                     fontFamily = getFontFamily(),
                                     fontSize = 16.sp
                                 )
@@ -184,17 +210,18 @@ fun BookDetailsScreen(book: Book, navigateBack: () -> Unit) {
                         }
                         Row(Modifier.padding(bottom = 5.dp)) {
                             Text(
-                                text = "Page count: ",
+                                text = stringResource(id = R.string.details_page_count),
                                 style = TextStyle(
-                                    color = colorResource(id = R.color.caput_mortuum),
+                                    color = MaterialTheme.colorScheme.tertiary,
                                     fontFamily = getFontFamily(),
                                     fontSize = 16.sp
-                                )
+                                ),
+                                modifier = Modifier.padding(end = 5.dp)
                             )
                             Text(
                                 text = pageCount,
                                 style = TextStyle(
-                                    color = colorResource(id = R.color.caput_mortuum),
+                                    color = MaterialTheme.colorScheme.tertiary,
                                     fontFamily = getFontFamily(),
                                     fontSize = 16.sp
                                 )
@@ -202,21 +229,43 @@ fun BookDetailsScreen(book: Book, navigateBack: () -> Unit) {
                         }
                         Row(Modifier.padding(bottom = 5.dp)) {
                             Text(
-                                text = "Publisher: ",
+                                text = stringResource(id = R.string.details_publisher),
                                 style = TextStyle(
-                                    color = colorResource(id = R.color.caput_mortuum),
+                                    color = MaterialTheme.colorScheme.tertiary,
                                     fontFamily = getFontFamily(),
                                     fontSize = 16.sp
-                                )
+                                ),
+                                modifier = Modifier.padding(end = 5.dp)
                             )
                             Text(
                                 text = publisher,
                                 style = TextStyle(
-                                    color = colorResource(id = R.color.caput_mortuum),
+                                    color = MaterialTheme.colorScheme.tertiary,
                                     fontFamily = getFontFamily(),
                                     fontSize = 16.sp
                                 )
                             )
+                        }
+                        if (readingStatus) {
+                            Row(Modifier.padding(bottom = 5.dp)) {
+                                Text(
+                                    text = stringResource(id = R.string.details_status),
+                                    style = TextStyle(
+                                        color = MaterialTheme.colorScheme.tertiary,
+                                        fontFamily = getFontFamily(),
+                                        fontSize = 16.sp
+                                    ),
+                                    modifier = Modifier.padding(end = 5.dp)
+                                )
+                                Text(
+                                    text = status,
+                                    style = TextStyle(
+                                        color = MaterialTheme.colorScheme.tertiary,
+                                        fontFamily = getFontFamily(),
+                                        fontSize = 16.sp
+                                    )
+                                )
+                            }
                         }
                     }
                 }

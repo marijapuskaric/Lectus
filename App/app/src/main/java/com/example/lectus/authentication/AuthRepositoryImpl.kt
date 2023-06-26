@@ -1,6 +1,9 @@
 package com.example.lectus.authentication
 
+import com.example.lectus.db.addUserToFirestore
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,12 +18,16 @@ class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth
 ) : AuthRepository {
     override val currentUser get() = auth.currentUser
-
+    val db = Firebase.firestore
     override suspend fun firebaseSignUpWithEmailAndPassword(
-        email: String, password: String
+        email: String, password: String, username: String
     ): SignUpResponse {
         return try {
             auth.createUserWithEmailAndPassword(email, password).await()
+            val user = auth.currentUser
+            if (user != null) {
+                addUserToFirestore(username, email, user.uid, db)
+            }
             Response.Success(true)
         } catch (e: Exception) {
             Response.Failure(e)
@@ -47,14 +54,14 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-   /* override suspend fun sendPasswordResetEmail(email: String): SendPasswordResetEmailResponse {
+    override suspend fun sendPasswordResetEmail(email: String): SendPasswordResetEmailResponse {
         return try {
             auth.sendPasswordResetEmail(email).await()
-            Success(true)
+            Response.Success(true)
         } catch (e: Exception) {
-            Failure(e)
+            Response.Failure(e)
         }
-    }*/
+    }
 
     override fun signOut() = auth.signOut()
 

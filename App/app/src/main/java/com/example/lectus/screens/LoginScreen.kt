@@ -3,7 +3,6 @@ package com.example.lectus.screens
 import android.annotation.SuppressLint
 import android.util.Patterns
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +23,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -58,7 +57,7 @@ import com.example.lectus.authentication.Utils.Companion.showMessage
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     onNavRegisterPage: () -> Unit,
-    modifier: Modifier = Modifier)
+    )
 {
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
@@ -69,8 +68,8 @@ fun LoginScreen(
     var validatePassword by rememberSaveable { mutableStateOf(true) }
     var isPasswordVisible by rememberSaveable { mutableStateOf(false) }
 
-    val validateEmailError = "The format of the email doesn't seem right"
-    val validatePasswordError = "Password must contain capital and non-capital letters, a number and at least 8 characters"
+    val validateEmailError = stringResource(id = R.string.vaildate_email_e)
+    val validatePasswordError = stringResource(id = R.string.vaildate_password_e)
 
     fun validateData(email: String, password: String): Boolean {
         val passwordRegex = "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}".toRegex()
@@ -84,7 +83,7 @@ fun LoginScreen(
     Column(
         Modifier
             .fillMaxSize()
-            .background(colorResource(id = R.color.champagne))
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Header()
         Spacer(modifier = Modifier.height(70.dp))
@@ -94,7 +93,7 @@ fun LoginScreen(
                     .padding(32.dp)
                     .requiredHeight(IntrinsicSize.Max),
                 colors = CardDefaults.cardColors(
-                    containerColor = colorResource(id = R.color.tan)
+                    containerColor = MaterialTheme.colorScheme.primary
                 ),
             ) {
                 Column(
@@ -107,7 +106,7 @@ fun LoginScreen(
                         fontFamily = getFontFamily(),
                         fontSize = 25.sp,
                         fontWeight = FontWeight.Bold,
-                        color = colorResource(id = R.color.caput_mortuum),
+                        color = MaterialTheme.colorScheme.tertiary,
                         text = stringResource(id = R.string.login),
                         modifier = Modifier
                             .padding(bottom = 35.dp, top = 35.dp),
@@ -115,7 +114,7 @@ fun LoginScreen(
                     Text(
                         fontFamily = getFontFamily(),
                         fontSize = 10.sp,
-                        color = colorResource(id = R.color.caput_mortuum),
+                        color = MaterialTheme.colorScheme.tertiary,
                         text = stringResource(id = R.string.email),
                         modifier = Modifier
                             .padding(start = 20.dp)
@@ -126,7 +125,6 @@ fun LoginScreen(
                     CustomOutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
-                        label = stringResource(id = R.string.email),
                         showError = !validateEmail,
                         errorMessage = validateEmailError,
                         leadingIconImageVector = Icons.Default.AlternateEmail,
@@ -141,7 +139,7 @@ fun LoginScreen(
                     Text(
                         fontFamily = getFontFamily(),
                         fontSize = 10.sp,
-                        color = colorResource(id = R.color.caput_mortuum),
+                        color = MaterialTheme.colorScheme.tertiary,
                         text = stringResource(id = R.string.password),
                         modifier = Modifier
                             .padding(start = 20.dp, top = 25.dp)
@@ -153,7 +151,6 @@ fun LoginScreen(
                     CustomOutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
-                        label = stringResource(id = R.string.password),
                         showError = !validatePassword,
                         errorMessage = validatePasswordError,
                         isPasswordField = true,
@@ -178,14 +175,14 @@ fun LoginScreen(
                             )
 
                         },
-                        colors = ButtonDefaults.buttonColors(colorResource(id = R.color.redwood)),
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
 
 
                     ) {
                         Text(
                             fontFamily = getFontFamily(),
                             text = stringResource(id = R.string.login),
-                            color = colorResource(id = R.color.champagne)
+                            color = MaterialTheme.colorScheme.background
                         )
                     }
                     Spacer(modifier = Modifier.height(30.dp))
@@ -213,6 +210,6 @@ fun ProgressBar() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ){
-        CircularProgressIndicator(color = colorResource(id = R.color.redwood))
+        CircularProgressIndicator(color = MaterialTheme.colorScheme.secondary)
     }
 }
