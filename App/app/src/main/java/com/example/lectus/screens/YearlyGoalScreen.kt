@@ -1,6 +1,5 @@
 package com.example.lectus.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,7 +36,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.MutableLiveData
 import com.example.lectus.R
 import com.example.lectus.composables.SetYearlyGoalDialog
-import com.example.lectus.data.LOG_DB
 import com.example.lectus.db.getYearlyGoal
 import com.example.lectus.getFontFamily
 import com.google.firebase.auth.FirebaseAuth
@@ -68,16 +66,11 @@ fun YearlyGoalScreen()
     if (currentUserUid != null)
     {
         getYearlyGoal(currentUserUid,db){ goal, finished ->
-            if (goal != null)
-            {
-                goalLiveData.value = goal
-                finishedLiveData.value = finished
-                goalBooks = goal.toInt()
-                finishedBooks = finished!!.toInt()
-            }
-           else{
-                Log.e(LOG_DB, "Failed to retrieve user goal data")
-            }
+
+            goalLiveData.value = goal
+            finishedLiveData.value = finished
+            goalBooks = goal.toInt()
+            finishedBooks = finished.toInt()
         }
     }
     if (goal != null)
@@ -139,10 +132,9 @@ fun YearlyGoalScreen()
                 {
                     GoalGrid(goalBooks = goalBooks, finishedBooks = finishedBooks)
                 }
-
             }
             Spacer(modifier = Modifier.padding(10.dp))
-            if (finishedBooks >= goalBooks)
+            if (finishedBooks >= goalBooks && goalBooks > 0)
             {
                 Text(
                     text = stringResource(id = R.string.congratulations),

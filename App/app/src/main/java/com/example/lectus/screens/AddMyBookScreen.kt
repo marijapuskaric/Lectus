@@ -67,6 +67,7 @@ import com.example.lectus.composables.CustomOutlinedTextField
 import com.example.lectus.getFontFamily
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import com.example.lectus.authentication.Utils
 import com.example.lectus.db.addImageToFirebaseStorage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
@@ -309,28 +310,40 @@ fun AddMyBookScreen() {
                     Spacer(modifier = Modifier.height(30.dp))
                     Button(
                         onClick = {
-                            val authorNames: List<String> = authors.split(",").map { it.trim() }.toList()
-                            var pageCountLong: Long? = null
-                            if (currentUserUid != null) {
-                                if (pageCount != "")
-                                {
-                                    pageCountLong = pageCount.toLong()
+                            if (title != "" && selectedStatus != "") {
+                                val authorNames: List<String> =
+                                    authors.split(",").map { it.trim() }.toList()
+                                var pageCountLong: Long? = null
+                                if (currentUserUid != null) {
+                                    if (pageCount != "") {
+                                        pageCountLong = pageCount.toLong()
+                                    }
+                                    addImageToFirebaseStorage(
+                                        selectedImage,
+                                        storage,
+                                        title,
+                                        authorNames,
+                                        description,
+                                        publisher,
+                                        pageCountLong,
+                                        selectedStatus,
+                                        currentUserUid,
+                                        db,
+                                        context
+                                    )
                                 }
-                                addImageToFirebaseStorage(
-                                    selectedImage,
-                                    storage,
-                                    title,
-                                    authorNames,
-                                    description,
-                                    publisher,
-                                    pageCountLong,
-                                    selectedStatus,
-                                    currentUserUid,
-                                    db,
-                                    context
-                                )
+                                title = ""
+                                authors = ""
+                                publisher = ""
+                                description = ""
+                                pageCount = ""
+                                selectedImage = null
+                                selectedImageBitmap = null
+                                selectedStatus = ""
                             }
-
+                            else{
+                                Utils.showMessage(context, "Review fields, title and reading status cannot be empty.")
+                            }
                         },
                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
 
@@ -432,5 +445,4 @@ private fun loadBitmapFromUri(contentResolver: ContentResolver, uri: Uri): Image
     }
     return bitmap?.asImageBitmap() ?: throw IllegalStateException("Failed to load bitmap from Uri: $uri")
 }
-
 

@@ -163,7 +163,7 @@ fun setUserYearlyGoal(
 ){
     val goalData = hashMapOf(
         "goal" to yearlyGoal,
-        "finished" to null,
+        "finished" to 0,
     )
     db.collection(USER_GOALS_COLLECTION)
         .document(currentUserUid)

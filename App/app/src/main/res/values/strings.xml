@@ -65,7 +65,8 @@
     <string name="congratulations">Congratulations!</string>
     <string name="completed_yearly">You have reached your yearly goal!</string>
     <string name="your_daily_goal">Your daily goal is: </string>
-    <string name="instructions">Track your daily goals progress trough the month by marking the days you have achieved it.</string>
+    <string name="instructions">Track your daily goal progress through the month by marking the days you have achieved it.</string>
+    <string name="not_set_daily_goal">Not set</string>
 
     <string name="vaildate_email_e">The format of the email doesn\'t seem right</string>
     <string name="vaildate_password_e">Password must contain capital and non-capital letters, a number and at least 8 characters</string>

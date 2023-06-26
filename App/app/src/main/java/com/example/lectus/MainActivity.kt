@@ -20,6 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.lectus.authentication.MainViewModel
 import com.example.lectus.composables.TopNavigationBar
+import com.example.lectus.mainnavigation.BottomNavigationScreens
 import com.example.lectus.mainnavigation.NavGraph
 import com.example.lectus.mainnavigation.Screen
 import com.example.lectus.ui.theme.LectusTheme
@@ -77,7 +78,7 @@ class MainActivity: ComponentActivity() {
     }
 
     @Composable
-    private fun NavigateToMainScreen() = navController.navigate(Screen.MainScreen.route) {
+    private fun NavigateToMainScreen() = navController.navigate(BottomNavigationScreens.MyLibrary.route) {
         popUpTo(navController.graph.id) {
             inclusive = true
         }

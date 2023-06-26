@@ -6,11 +6,13 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.NavHostController
-import com.example.lectus.composables.BottomNavigationScreens
-import com.example.lectus.composables.MainScreen
+import com.example.lectus.screens.AddBookScreen
+import com.example.lectus.screens.GoalsScreen
 import com.example.lectus.screens.LoginScreen
+import com.example.lectus.screens.MyLibraryScreen
 import com.example.lectus.screens.RegisterScreen
 import com.example.lectus.screens.SettingsScreen
 import com.example.lectus.viewmodels.ThemeViewModel
@@ -25,6 +27,17 @@ fun NavGraph(
     navController: NavHostController,
     themeViewModel: ThemeViewModel
 ) {
+    val themeChanged = themeViewModel.themeChanged.value
+
+    if (themeChanged) {
+        LaunchedEffect(key1 = themeChanged) {
+            navController.navigate(BottomNavigationScreens.Settings.route) {
+                popUpTo(navController.graph.startDestinationId)
+                launchSingleTop = true
+            }
+            themeViewModel.resetThemeChanged()
+        }
+    }
     AnimatedNavHost(
         navController = navController,
         startDestination = Screen.LoginScreen.route,
@@ -50,13 +63,17 @@ fun NavGraph(
             )
         }
 
-        composable(
-            route = Screen.MainScreen.route
-        ) {
-            MainScreen(themeViewModel, navController)
-        }
         composable(route = BottomNavigationScreens.Settings.route) {
             SettingsScreen(mainNavController = navController, themeViewModel = themeViewModel)
+        }
+        composable(route = BottomNavigationScreens.MyLibrary.route) {
+            MyLibraryScreen(mainNavController = navController)
+        }
+        composable(route = BottomNavigationScreens.AddBook.route) {
+            AddBookScreen(mainNavController = navController)
+        }
+        composable(route = BottomNavigationScreens.Goals.route) {
+            GoalsScreen(mainNavController = navController)
         }
     }
 }

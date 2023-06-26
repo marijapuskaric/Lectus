@@ -121,21 +121,32 @@ fun DailyGoalScreen()
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.padding(5.dp))
-                Text(
-                    text = chosenNumber.toString(),
-                    fontSize = 18.sp,
-                    fontFamily = getFontFamily(),
-                    color = MaterialTheme.colorScheme.tertiary,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.padding(5.dp))
-                Text(
-                    text = chosenOption.toString(),
-                    fontSize = 18.sp,
-                    fontFamily = getFontFamily(),
-                    color = MaterialTheme.colorScheme.tertiary,
-                    fontWeight = FontWeight.Bold
-                )
+                if (chosenNumber == 0 && chosenOption == null){
+                    Text(
+                        text = stringResource(id = R.string.not_set_daily_goal),
+                        fontSize = 18.sp,
+                        fontFamily = getFontFamily(),
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                else {
+                    Text(
+                        text = chosenNumber.toString(),
+                        fontSize = 18.sp,
+                        fontFamily = getFontFamily(),
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.padding(5.dp))
+                    Text(
+                        text = chosenOption.toString(),
+                        fontSize = 18.sp,
+                        fontFamily = getFontFamily(),
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
             Spacer(modifier = Modifier.padding(20.dp))
             Text(
@@ -225,7 +236,14 @@ fun MonthGrid(
                                 dayStates[index] =
                                     !dayStates[index]
                                 achieved = !achieved
-                                addDailyGoalsAchieved(currentYear, monthName, index+1, achieved, currentUserUid, db)
+                                addDailyGoalsAchieved(
+                                    currentYear,
+                                    monthName,
+                                    index + 1,
+                                    achieved,
+                                    currentUserUid,
+                                    db
+                                )
                             },
                         tint = MaterialTheme.colorScheme.secondary
                     )

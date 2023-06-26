@@ -101,7 +101,7 @@ fun getUser (
 fun getYearlyGoal(
     currentUserUid: String,
     db: FirebaseFirestore,
-    callback: (Long?, Long?) -> Unit
+    callback: (Long, Long) -> Unit
 ){
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)
     val goalRef = db.collection(USER_GOALS_COLLECTION)
@@ -115,15 +115,15 @@ fun getYearlyGoal(
                 val finished = documentSnapshot.getLong("finished")
                 Log.d(LOG_DB, goal.toString())
                 Log.d(LOG_DB, finished.toString())
-                callback(goal, finished)
+                if (goal != null && finished != null) callback(goal, finished)
             }
             else{
-                callback(null, null)
+                callback(0, 0)
             }
         }
         .addOnFailureListener { e ->
             Log.e(LOG_DB, "Error retrieving yearly goal", e)
-            callback(null, null)
+            callback(0, 0)
         }
 
 }

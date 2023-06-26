@@ -1,13 +1,11 @@
 package com.example.lectus.composables
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.example.lectus.data.Book
 import com.example.lectus.data.BookData
 
@@ -21,7 +19,6 @@ fun <T> RecyclerView(
 
     LazyColumn(
         modifier = Modifier
-            .padding(bottom = 80.dp)
             .background(MaterialTheme.colorScheme.background)
     ) {
         items(items = books?: emptyList()) { book ->
