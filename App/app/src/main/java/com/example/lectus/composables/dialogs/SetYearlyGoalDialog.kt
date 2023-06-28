@@ -1,8 +1,5 @@
-package com.example.lectus.composables
+package com.example.lectus.composables.dialogs
 
-import androidx.compose.material.RadioButton
-import androidx.compose.material.RadioButtonDefaults
-import androidx.compose.runtime.remember
 import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,7 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.lectus.R
-import com.example.lectus.db.setUserDailyGoal
+import com.example.lectus.composables.CustomOutlinedTextField
+import com.example.lectus.db.updateYearlyGoal
 import com.example.lectus.getFontFamily
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
@@ -50,7 +48,7 @@ import com.google.firebase.ktx.Firebase
 
 
 @Composable
-fun SetDailyGoalDialog(
+fun SetYearlyGoalDialog(
     showDialog: Boolean,
     context: Context,
     onDismiss: () -> Unit
@@ -59,13 +57,9 @@ fun SetDailyGoalDialog(
 
     val db = Firebase.firestore
     val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
-    var dailyGoal by rememberSaveable { mutableStateOf("") }
-    var selectedGoal by remember { mutableStateOf("") }
-    val goalOptions = listOf(
-        stringResource(id = R.string.pages),
-        stringResource(id = R.string.chapters),
-        )
-    if (showDialog) {
+    var yearlyGoal by rememberSaveable { mutableStateOf("") }
+    if (showDialog)
+    {
         Dialog(
             onDismissRequest = { onDismiss() },
         ) {
@@ -107,7 +101,7 @@ fun SetDailyGoalDialog(
                         }
                     }
                     Text(
-                        text = stringResource(id = R.string.set_daily_goal),
+                        text = stringResource(id = R.string.set_yearly_goal),
                         fontFamily = getFontFamily(),
                         fontSize = 30.sp,
                         color = MaterialTheme.colorScheme.tertiary,
@@ -116,9 +110,8 @@ fun SetDailyGoalDialog(
                             .padding(bottom = 20.dp, top = 5.dp)
                             .align(Alignment.CenterHorizontally)
                     )
-
                     Text(
-                        text = stringResource(id = R.string.choose_goal),
+                        text = stringResource(id = R.string.yearly_goal_dialog),
                         fontFamily = getFontFamily(),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
@@ -128,57 +121,19 @@ fun SetDailyGoalDialog(
                             .align(Alignment.CenterHorizontally)
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    goalOptions.forEach { goal ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { selectedGoal = goal }
-                                .padding(vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(
-                                selected = selectedGoal == goal,
-                                onClick = { selectedGoal = goal },
-                                modifier = Modifier
-                                    .padding(end = 8.dp),
-                                colors = RadioButtonDefaults.colors(
-                                    selectedColor = MaterialTheme.colorScheme.tertiary,
-                                    unselectedColor = MaterialTheme.colorScheme.tertiary
-                                )
-                            )
-                            Text(text = goal,
-                                fontFamily = getFontFamily(),
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.tertiary,
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = stringResource(id = R.string.select_number),
-                        fontFamily = getFontFamily(),
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier
-                            .padding(bottom = 35.dp, top = 35.dp)
-                            .align(Alignment.CenterHorizontally)
-                    )
                     Spacer(modifier = Modifier.height(16.dp))
                     CustomOutlinedTextField(
-                        value = dailyGoal,
-                        onValueChange = {dailyGoal = it},
+                        value = yearlyGoal,
+                        onValueChange = {yearlyGoal = it},
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Number,
                             imeAction = ImeAction.Done
                         ),
                         keyboardActions = KeyboardActions(
-                            onDone = {focusManager.clearFocus()}
+                            onDone = { focusManager.clearFocus() }
                         )
                     )
+
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -186,8 +141,9 @@ fun SetDailyGoalDialog(
                     ) {
                         Button(
                             onClick = {
-                                if (selectedGoal.isNotEmpty() && dailyGoal.isNotEmpty() && currentUserUid != null) {
-                                    setUserDailyGoal(selectedGoal, dailyGoal.toInt(), currentUserUid, db, context)
+                                if (yearlyGoal.isNotEmpty() && currentUserUid != null) {
+                                    updateYearlyGoal(yearlyGoal.toInt(), currentUserUid, db, context)
+
                                 }
                                 onDismiss()
                             },

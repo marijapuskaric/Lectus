@@ -36,13 +36,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.example.lectus.R
+import com.example.lectus.composables.dialogs.EditDialog
+import com.example.lectus.composables.dialogs.StatusSelectionDialog
 import com.example.lectus.getFontFamily
 
 @Composable
 fun <T> ListItemLibrary(
     onBookClicked: (T) -> Unit,
     book: T,
-    title : String,
+    title : String?,
     authors: List<String>?,
     publisher: String?,
     description: String?,
@@ -54,7 +56,8 @@ fun <T> ListItemLibrary(
     val context = LocalContext.current
     val showStatusDialog = remember { mutableStateOf(false) }
     val showEditDialog = remember { mutableStateOf(false) }
-    if (showStatusDialog.value) {
+    if (showStatusDialog.value)
+    {
         StatusSelectionDialog(
             title,
             authors,
@@ -67,7 +70,8 @@ fun <T> ListItemLibrary(
             onBookAdded = { },
             onDismiss = { showStatusDialog.value = false })
     }
-    if (showEditDialog.value) {
+    if (showEditDialog.value)
+    {
         EditDialog(
             showDialog = showEditDialog.value,
             onBookChanged = { },
@@ -75,137 +79,135 @@ fun <T> ListItemLibrary(
             title, authors, publisher, pageCount, image, context
         )
     }
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            modifier = Modifier.padding(vertical = .4.dp, horizontal = 8.dp)
+    Surface(
+        color = MaterialTheme.colorScheme.background,
+        modifier = Modifier.padding(vertical = .4.dp, horizontal = 8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(8.dp)
+                .border(
+                    1.dp,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .clickable { onBookClicked(book) }
         ) {
-            Box(
+            Row(
                 modifier = Modifier
-                    .padding(8.dp)
-                    .border(
-                        1.dp,
-                        color = MaterialTheme.colorScheme.tertiary,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .clickable {
-                        onBookClicked(book)
-                    }
+                    .padding(15.dp)
+                    .fillMaxWidth()
             ) {
-                Row(
-                    modifier = Modifier
-                        .padding(15.dp)
-                        .fillMaxWidth()
-                ) {
-                    Column(Modifier.width(IntrinsicSize.Max)) {
-                        if (image != null) {
-
-                            val url: String = if (image.startsWith("http://")) {
-                                "https://" + image.substring(7)
-                            } else {
-                                image
-                            }
-
-                            Image(
-                                painter = rememberImagePainter(data = url),
-                                contentDescription = stringResource(id = R.string.book_cover_image),
-                                modifier = Modifier.size(100.dp, 200.dp),
-                            )
-                        } else {
-                            Box(
+                Column(Modifier.width(IntrinsicSize.Max))
+                {
+                    if (image != null)
+                    {
+                        val url: String = if (image.startsWith("http://"))
+                        {
+                            "https://" + image.substring(7)
+                        }
+                        else
+                        {
+                            image
+                        }
+                        Image(
+                            painter = rememberImagePainter(data = url),
+                            contentDescription = stringResource(id = R.string.book_cover_image),
+                            modifier = Modifier.size(100.dp, 200.dp),
+                        )
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .size(100.dp, 200.dp)
+                                .background(MaterialTheme.colorScheme.surface),
+                        ) {
+                            Icon(
+                                Icons.Filled.ImageNotSupported,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.tertiary,
                                 modifier = Modifier
-                                    .size(100.dp, 200.dp)
-                                    .background(MaterialTheme.colorScheme.surface),
-                            ) {
-                                Icon(
-                                    Icons.Filled.ImageNotSupported,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.tertiary,
-                                    modifier = Modifier
-                                        .align(Alignment.Center)
-                                        .size(70.dp, 200.dp),
-                                )
-                            }
+                                    .align(Alignment.Center)
+                                    .size(70.dp, 200.dp),
+                            )
                         }
                     }
-                    Column(
-                        modifier = Modifier
-                            .padding(start = 16.dp)
-                            .align(Alignment.CenterVertically)
-                            .weight(1f),
-                        verticalArrangement = Arrangement.Center
-                    ) {
+                }
+                Column(
+                    modifier = Modifier
+                        .padding(start = 16.dp)
+                        .align(Alignment.CenterVertically)
+                        .weight(1f),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = (title ?: "-"),
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = getFontFamily(),
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    )
+                    authors?.let { authors ->
                         Text(
-                            text = title,
+                            text = authors.joinToString(),
                             style = TextStyle(
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp,
                                 fontFamily = getFontFamily(),
                                 color = MaterialTheme.colorScheme.tertiary
                             )
                         )
-                        authors?.let { authors ->
-                            Text(
-                                text = authors.joinToString(),
-                                style = TextStyle(
-                                    fontSize = 14.sp,
-                                    fontFamily = getFontFamily(),
-                                    color = MaterialTheme.colorScheme.tertiary
-                                )
+                    }
+                }
+                if (add)
+                {
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .width(80.dp)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(150.dp)
+                                .clickable { showStatusDialog.value = true }
+                        ) {
+                            Icon(
+                                Icons.Filled.AddCircleOutline,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.tertiary,
+                                modifier = Modifier.width(40.dp)
                             )
                         }
                     }
-                    if (add) {
-                        Column(
+                }
+                if (edit)
+                {
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .width(80.dp)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
                             modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .width(80.dp)
+                                .fillMaxWidth()
+                                .height(150.dp)
+                                .clickable { showEditDialog.value = true }
                         ) {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(150.dp)
-                                    .clickable {
-                                        showStatusDialog.value = true
-                                    }
-                            ) {
-                                Icon(
-                                    Icons.Filled.AddCircleOutline,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.tertiary,
-                                    modifier = Modifier.width(40.dp)
-
-                                )
-                            }
-                        }
-                    }
-                    if (edit) {
-                        Column(
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                                .width(80.dp)
-                        ) {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(150.dp)
-                                    .clickable {
-                                        showEditDialog.value = true
-                                    }
-                            ) {
-                                Icon(
-                                    Icons.Filled.Edit,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.tertiary,
-                                    modifier = Modifier.width(40.dp)
-                                )
-                            }
+                            Icon(
+                                Icons.Filled.Edit,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.tertiary,
+                                modifier = Modifier.width(40.dp)
+                            )
                         }
                     }
                 }
             }
         }
+    }
 }
 
 

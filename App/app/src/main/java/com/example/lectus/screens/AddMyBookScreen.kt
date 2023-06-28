@@ -102,7 +102,8 @@ fun AddMyBookScreen() {
     Column(
         Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)) {
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -114,8 +115,7 @@ fun AddMyBookScreen() {
             Card(
                 modifier = Modifier
                     .padding(32.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primary),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
             ){
                 Column(
                     modifier = Modifier
@@ -164,8 +164,7 @@ fun AddMyBookScreen() {
                             .requiredWidth(IntrinsicSize.Max)
                             .align(Alignment.Start),
                         textAlign = TextAlign.Left,
-
-                        )
+                    )
                     CustomOutlinedTextField(
                         value = authors,
                         onValueChange = {authors = it},
@@ -187,8 +186,7 @@ fun AddMyBookScreen() {
                             .requiredWidth(IntrinsicSize.Max)
                             .align(Alignment.Start),
                         textAlign = TextAlign.Left,
-
-                        )
+                    )
                     CustomOutlinedTextField(
                         value = description,
                         onValueChange = {description= it},
@@ -210,8 +208,7 @@ fun AddMyBookScreen() {
                             .requiredWidth(IntrinsicSize.Max)
                             .align(Alignment.Start),
                         textAlign = TextAlign.Left,
-
-                        )
+                    )
                     CustomOutlinedTextField(
                         value = publisher,
                         onValueChange = {publisher = it},
@@ -233,8 +230,7 @@ fun AddMyBookScreen() {
                             .requiredWidth(IntrinsicSize.Max)
                             .align(Alignment.Start),
                         textAlign = TextAlign.Left,
-
-                        )
+                    )
                     CustomOutlinedTextField(
                         value = pageCount,
                         onValueChange = {pageCount = it},
@@ -256,8 +252,7 @@ fun AddMyBookScreen() {
                             .requiredWidth(IntrinsicSize.Max)
                             .align(Alignment.Start),
                         textAlign = TextAlign.Left,
-
-                        )
+                    )
                     AddImageField(
                         imageUri = selectedImage,
                         onImageSelected = { uri -> selectedImage = uri },
@@ -265,7 +260,6 @@ fun AddMyBookScreen() {
                         onImageSelectedBitmap = { imageBitmap -> selectedImageBitmap = imageBitmap },
                         onDeleteImage = { deleteImage() },
                     )
-
                     Text(
                         fontFamily = getFontFamily(),
                         fontSize = 10.sp,
@@ -276,9 +270,7 @@ fun AddMyBookScreen() {
                             .requiredWidth(IntrinsicSize.Max)
                             .align(Alignment.Start),
                         textAlign = TextAlign.Left,
-
-                        )
-
+                    )
                     statusOptions.forEach { status ->
                         Row(
                             modifier = Modifier
@@ -306,16 +298,19 @@ fun AddMyBookScreen() {
                             )
                         }
                     }
-
                     Spacer(modifier = Modifier.height(30.dp))
                     Button(
-                        onClick = {
-                            if (title != "" && selectedStatus != "") {
+                        onClick =
+                        {
+                            if (title != "" && selectedStatus != "")
+                            {
                                 val authorNames: List<String> =
                                     authors.split(",").map { it.trim() }.toList()
                                 var pageCountLong: Long? = null
-                                if (currentUserUid != null) {
-                                    if (pageCount != "") {
+                                if (currentUserUid != null)
+                                {
+                                    if (pageCount != "")
+                                    {
                                         pageCountLong = pageCount.toLong()
                                     }
                                     addImageToFirebaseStorage(
@@ -341,23 +336,24 @@ fun AddMyBookScreen() {
                                 selectedImageBitmap = null
                                 selectedStatus = ""
                             }
-                            else{
+                            else
+                            {
                                 Utils.showMessage(context, "Review fields, title and reading status cannot be empty.")
                             }
                         },
                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
-
                     ) {
-                        Text(fontFamily = getFontFamily(), text = stringResource(id = R.string.add), color = MaterialTheme.colorScheme.background)
+                        Text(
+                            fontFamily = getFontFamily(),
+                            text = stringResource(id = R.string.add),
+                            color = MaterialTheme.colorScheme.background
+                        )
                     }
                     Spacer(modifier = Modifier.height(30.dp))
                 }
             }
-
-
         }
     }
-    
 }
 
 @Composable
@@ -382,9 +378,8 @@ fun AddImageField(
             }
         }
     )
-
-
-    Row(Modifier.padding(16.dp)) {
+    Row(Modifier.padding(16.dp))
+    {
         Box(
             modifier = Modifier
                 .width(300.dp)
@@ -399,9 +394,10 @@ fun AddImageField(
                 )
                 .padding(10.dp)
         ) {
-            if (imageUri != null && image != null) {
-                Row(Modifier.fillMaxSize()) {
-                    Log.d("IMAGE", imageUri.toString())
+            if (imageUri != null && image != null)
+            {
+                Row(Modifier.fillMaxSize())
+                {
                     Image(
                         painter = BitmapPainter(image),
                         contentDescription = stringResource(id = R.string.select_image),
@@ -420,9 +416,12 @@ fun AddImageField(
                         )
                     }
                 }
-            } else {
+            }
+            else
+            {
                 IconButton(
-                    onClick = {
+                    onClick =
+                    {
                         activityResultLauncher.launch("image/*")
                     },
                     modifier = Modifier.fillMaxSize()
@@ -438,7 +437,8 @@ fun AddImageField(
     }
 }
 
-private fun loadBitmapFromUri(contentResolver: ContentResolver, uri: Uri): ImageBitmap {
+private fun loadBitmapFromUri(contentResolver: ContentResolver, uri: Uri): ImageBitmap
+{
     val inputStream: InputStream? = contentResolver.openInputStream(uri)
     val bitmap = inputStream?.use { input ->
         BitmapFactory.decodeStream(input)

@@ -14,39 +14,35 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.lectus.authentication.MainViewModel
-import com.example.lectus.composables.TopNavigationBar
-import com.example.lectus.mainnavigation.BottomNavigationScreens
+import com.example.lectus.viewmodels.MainViewModel
+import com.example.lectus.data.BottomNavigationScreens
 import com.example.lectus.mainnavigation.NavGraph
-import com.example.lectus.mainnavigation.Screen
+import com.example.lectus.data.Screen
 import com.example.lectus.ui.theme.LectusTheme
 import com.example.lectus.viewmodels.ThemeViewModel
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
-class MainActivity: ComponentActivity() {
-
+class MainActivity: ComponentActivity()
+{
     private lateinit var navController: NavHostController
     private lateinit var viewModel: MainViewModel
-
-
-
     @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalAnimationApi::class, ExperimentalComposeUiApi::class)
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
         setContent {
             navController = rememberAnimatedNavController()
             viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
             val themeViewModel: ThemeViewModel = viewModel()
             val isDarkTheme by themeViewModel.isDarkTheme
-            LectusTheme(darkTheme = isDarkTheme) {
+            LectusTheme(darkTheme = isDarkTheme)
+            {
                 Surface(
                     Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
@@ -62,33 +58,33 @@ class MainActivity: ComponentActivity() {
         }
     }
     @Composable
-    private fun AuthState(viewModel: MainViewModel) {
+    private fun AuthState(viewModel: MainViewModel)
+    {
         val isUserSignedOut = viewModel.getAuthState().collectAsState().value
-        if (isUserSignedOut) {
+        if (isUserSignedOut)
+        {
             NavigateToLoginScreen()
-        } else {
+        }
+        else
+        {
             NavigateToMainScreen()
         }
     }
     @Composable
-    private fun NavigateToLoginScreen() = navController.navigate(Screen.LoginScreen.route) {
-        popUpTo(navController.graph.id) {
+    private fun NavigateToLoginScreen() = navController.navigate(Screen.LoginScreen.route)
+    {
+        popUpTo(navController.graph.id)
+        {
             inclusive = true
         }
     }
 
     @Composable
-    private fun NavigateToMainScreen() = navController.navigate(BottomNavigationScreens.MyLibrary.route) {
-        popUpTo(navController.graph.id) {
+    private fun NavigateToMainScreen() = navController.navigate(BottomNavigationScreens.MyLibrary.route)
+    {
+        popUpTo(navController.graph.id)
+        {
             inclusive = true
         }
     }
-
-
-}
-
-@Preview (showBackground = true)
-@Composable
-fun DefaultPreview(){
-    TopNavigationBar(tabs = listOf("All", "To read", "Reading", "Finished reading"), onTabSelected = {}, selectedTabIndex = 0)
 }

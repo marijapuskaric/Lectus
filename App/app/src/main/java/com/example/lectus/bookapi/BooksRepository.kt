@@ -5,16 +5,20 @@ import com.example.lectus.data.Book
 import com.example.lectus.data.SearchResponse
 import retrofit2.Response
 
-class BooksRepository {
+class BooksRepository
+{
     private var isLoading = false
-    suspend fun getBooksList(query: String, startIndex: Int): List<Book>{
+    suspend fun getBooksList(query: String, startIndex: Int): List<Book>
+    {
         isLoading = true
         val response = getResponse(query,startIndex)
-        return if (!isLoading) {
+        return if (!isLoading)
+        {
             val searchResponse = response.body()
             searchResponse?.items ?: emptyList()
-        } else{
-
+        }
+        else
+        {
             isLoading = false
             emptyList()
         }
@@ -29,10 +33,12 @@ class BooksRepository {
             maxResults = 20,
             apiKey = API_KEY,
         )
-        return if (response.isSuccessful) {
+        return if (response.isSuccessful)
+        {
             isLoading = false
             response
-        } else{
+        } else
+        {
             isLoading = true
             response
         }

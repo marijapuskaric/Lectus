@@ -8,7 +8,8 @@ import com.example.lectus.data.TAG
 
 
 class Utils {
-    companion object {
+    companion object
+    {
         fun print(e: Exception) = Log.e(TAG, e.stackTraceToString())
 
         fun showMessage(

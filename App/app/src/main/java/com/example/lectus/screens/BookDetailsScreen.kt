@@ -35,7 +35,8 @@ import com.example.lectus.data.BookData
 import com.example.lectus.getFontFamily
 
 @Composable
-fun  <T> BookDetailsScreen(book: T, navigateBack: () -> Unit, readingStatus: Boolean) {
+fun  <T> BookDetailsScreen(book: T, navigateBack: () -> Unit, readingStatus: Boolean)
+{
     var title  = "-"
     var authors: String? = "-"
     var description = "-"
@@ -45,7 +46,10 @@ fun  <T> BookDetailsScreen(book: T, navigateBack: () -> Unit, readingStatus: Boo
     var status = "-"
     if (book is BookData)
     {
-        title = book.title
+        if (book.title != null)
+        {
+            title = book.title
+        }
         authors = book.authors?.joinToString(", ")
         if (book.description != null)
         {
@@ -64,7 +68,10 @@ fun  <T> BookDetailsScreen(book: T, navigateBack: () -> Unit, readingStatus: Boo
     }
     if (book is Book)
     {
-        title = book.volumeInfo.title
+        if (book.volumeInfo.title != null)
+        {
+            title = book.volumeInfo.title
+        }
         authors = book.volumeInfo.authors?.joinToString(", ")
         if (book.volumeInfo.description != null)
         {
@@ -83,18 +90,20 @@ fun  <T> BookDetailsScreen(book: T, navigateBack: () -> Unit, readingStatus: Boo
     if (authors == null) {
         authors = "-"
     }
-
-    Column(Modifier.fillMaxSize()) {
+    Column(Modifier.fillMaxSize())
+    {
         Box(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = 80.dp)
         ) {
-            Column {
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp)) {
+            Column{
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                ) {
                     Icon(
                         Icons.Filled.ArrowBack,
                         contentDescription = null,
@@ -103,7 +112,6 @@ fun  <T> BookDetailsScreen(book: T, navigateBack: () -> Unit, readingStatus: Boo
                             .width(40.dp)
                             .clickable { navigateBack() }
                     )
-
                 }
                 Box(
                     contentAlignment = Alignment.Center,
@@ -113,9 +121,11 @@ fun  <T> BookDetailsScreen(book: T, navigateBack: () -> Unit, readingStatus: Boo
                 ) {
                     if (image != null)
                     {
-                        val url: String = if (image.startsWith("http://")) {
+                        val url: String = if (image.startsWith("http://"))
+                        {
                             "https://" + image.substring(7)
-                        } else {
+                        } else
+                        {
                             image
                         }
                         Image(
@@ -143,7 +153,6 @@ fun  <T> BookDetailsScreen(book: T, navigateBack: () -> Unit, readingStatus: Boo
                             )
                         }
                     }
-
                 }
                 Box(
                     contentAlignment = Alignment.Center,
@@ -167,9 +176,9 @@ fun  <T> BookDetailsScreen(book: T, navigateBack: () -> Unit, readingStatus: Boo
                         .padding(horizontal = 20.dp)
                         .fillMaxWidth()
                 ) {
-                    Column()
-                    {
-                        Row(Modifier.padding(bottom = 5.dp)) {
+                    Column{
+                        Row(Modifier.padding(bottom = 5.dp))
+                        {
                             Text(
                                 text = stringResource(id = R.string.details_authors),
                                 style = TextStyle(
@@ -187,9 +196,9 @@ fun  <T> BookDetailsScreen(book: T, navigateBack: () -> Unit, readingStatus: Boo
                                     color = MaterialTheme.colorScheme.tertiary
                                 )
                             )
-
                         }
-                        Row(Modifier.padding(bottom = 5.dp)) {
+                        Row(Modifier.padding(bottom = 5.dp))
+                        {
                             Text(
                                 text = stringResource(id = R.string.details_description),
                                 style = TextStyle(
@@ -208,7 +217,8 @@ fun  <T> BookDetailsScreen(book: T, navigateBack: () -> Unit, readingStatus: Boo
                                 )
                             )
                         }
-                        Row(Modifier.padding(bottom = 5.dp)) {
+                        Row(Modifier.padding(bottom = 5.dp))
+                        {
                             Text(
                                 text = stringResource(id = R.string.details_page_count),
                                 style = TextStyle(
@@ -227,7 +237,8 @@ fun  <T> BookDetailsScreen(book: T, navigateBack: () -> Unit, readingStatus: Boo
                                 )
                             )
                         }
-                        Row(Modifier.padding(bottom = 5.dp)) {
+                        Row(Modifier.padding(bottom = 5.dp))
+                        {
                             Text(
                                 text = stringResource(id = R.string.details_publisher),
                                 style = TextStyle(
@@ -246,8 +257,10 @@ fun  <T> BookDetailsScreen(book: T, navigateBack: () -> Unit, readingStatus: Boo
                                 )
                             )
                         }
-                        if (readingStatus) {
-                            Row(Modifier.padding(bottom = 5.dp)) {
+                        if (readingStatus)
+                        {
+                            Row(Modifier.padding(bottom = 5.dp))
+                            {
                                 Text(
                                     text = stringResource(id = R.string.details_status),
                                     style = TextStyle(

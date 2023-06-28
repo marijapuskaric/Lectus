@@ -16,14 +16,15 @@ fun <T> RecyclerView(
     books: List<T>?,
     onBookClicked: (T) -> Unit
 ) {
-
     LazyColumn(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
     ) {
         items(items = books?: emptyList()) { book ->
-            when (book) {
-                is BookData -> {
+            when (book)
+            {
+                is BookData ->
+                {
                     ListItemLibrary(
                         onBookClicked = {onBookClicked(book)},
                         book = book,
@@ -37,8 +38,8 @@ fun <T> RecyclerView(
                         edit = edit
                     )
                 }
-
-                is Book -> {
+                is Book ->
+                {
                     ListItemLibrary(
                         onBookClicked = {onBookClicked(book)},
                         book = book,
@@ -54,7 +55,6 @@ fun <T> RecyclerView(
                 }
             }
         }
-
     }
 }
 

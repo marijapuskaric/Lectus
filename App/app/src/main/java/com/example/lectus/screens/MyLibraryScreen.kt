@@ -44,12 +44,14 @@ fun MyLibraryScreen(
     val bookListState = remember { mutableStateOf<List<BookData>>(emptyList()) }
     var selectedBook by remember { mutableStateOf<BookData?>(null) }
 
-    if (currentUserUid != null) {
+    if (currentUserUid != null)
+    {
         getBooksFromFirestore(db, currentUserUid) { books ->
             bookListState.value = books
         }
     }
-    val filteredBooks = when (selectedTopItem) {
+    val filteredBooks = when (selectedTopItem)
+    {
         0 -> bookListState.value
         1 -> bookListState.value.filter { it.status == stringResource(id = R.string.to_read) }
         2 -> bookListState.value.filter { it.status == stringResource(id = R.string.reading) }
@@ -57,32 +59,34 @@ fun MyLibraryScreen(
         else -> bookListState.value
     }
 
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                .fillMaxSize()
+    Column(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .fillMaxSize()
+    ) {
+        Header()
+        TopNavigationBar(
+            tabs = itemsTop,
+            onTabSelected = { selectedTopItem = it },
+            selectedTabIndex = selectedTopItem
         )
-        {
-            Header()
-            TopNavigationBar(
-                tabs = itemsTop,
-                onTabSelected = { selectedTopItem = it },
-                selectedTabIndex = selectedTopItem
-            )
-            Column(Modifier.weight(1f)) {
-                if (selectedBook != null) {
-                    BookDetailsScreen(
-                        book = selectedBook!!,
-                        navigateBack = { selectedBook = null },
-                        readingStatus = true
-                    )
-                } else {
-                    RecyclerView(add = false, edit = true, filteredBooks) { book ->
-                        selectedBook = book
-                    }
+        Column(Modifier.weight(1f)
+        ) {
+            if (selectedBook != null)
+            {
+                BookDetailsScreen(
+                    book = selectedBook!!,
+                    navigateBack = { selectedBook = null },
+                    readingStatus = true
+                )
+            }
+            else
+            {
+                RecyclerView(add = false, edit = true, filteredBooks) { book ->
+                    selectedBook = book
                 }
             }
-            CustomBottomNavigation(mainNavController = mainNavController)
         }
-
+        CustomBottomNavigation(mainNavController = mainNavController)
+    }
 }

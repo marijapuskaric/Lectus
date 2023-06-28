@@ -20,8 +20,6 @@ import com.google.firebase.storage.FirebaseStorage
 import java.util.Calendar
 import java.util.UUID
 
-
-
 fun addUserToFirestore(username: String, email: String, userId: String, db: FirebaseFirestore)
 {
     val user = hashMapOf(
@@ -29,7 +27,6 @@ fun addUserToFirestore(username: String, email: String, userId: String, db: Fire
         "email" to email,
         "userId" to userId
     )
-
     db.collection(USERS_COLLECTION)
         .add(user)
         .addOnSuccessListener { documentReference ->
@@ -41,7 +38,7 @@ fun addUserToFirestore(username: String, email: String, userId: String, db: Fire
 }
 
 fun addBookToFirestore(
-    title : String,
+    title : String?,
     authors: List<String>?,
     publisher: String?,
     description: String?,
@@ -53,7 +50,7 @@ fun addBookToFirestore(
     context: Context
 ) {
     val bookData = hashMapOf(
-        "title" to title,
+        "title" to (title ?: "-"),
         "authors" to authors,
         "publisher" to publisher,
         "description" to description,
@@ -61,7 +58,6 @@ fun addBookToFirestore(
         "image" to image,
         "status" to status
     )
-
     db.collection(USER_BOOKS_COLLECTION)
         .document(currentUserUid)
         .collection(BOOKS_COLLECTION)
@@ -91,15 +87,16 @@ fun addImageToFirebaseStorage(
 ) {
     val fileName = "${UUID.randomUUID()}.jpg"
     val storageRef = storage.reference.child(fileName)
-    if (imageUri != null) {
-
+    if (imageUri != null)
+    {
         val uploadTask = storageRef.putFile(imageUri)
         uploadTask.addOnSuccessListener { taskSnapshot ->
             taskSnapshot.metadata?.reference?.downloadUrl?.addOnSuccessListener { downloadUrl ->
                 val imageUrl = downloadUrl.toString()
                 addBookToFirestore(title, authors, description, publisher, pageCount, imageUrl,  currentUserUid, status, db, context)
             }
-        }.addOnFailureListener {
+        }.addOnFailureListener {e ->
+            Log.e(LOG_DB, "Error adding image", e)
         }
     }
     else {
@@ -205,14 +202,14 @@ fun updateYearlyGoal (
                         Utils.showMessage(context, "Error updating yearly goal.")
                     }
             }
-            else {
+            else
+            {
                 setUserYearlyGoal(yearlyGoal, currentUserUid, db, currentYear, context)
             }
         }
         .addOnFailureListener {e ->
             Log.d(LOG_DB, "Error checking yearly goal document", e)
         }
-
 }
 
 fun updateYearlyFinishedBooks(
@@ -227,7 +224,8 @@ fun updateYearlyFinishedBooks(
         .document(currentYear.toString())
     goalRef.get()
         .addOnSuccessListener { documentSnapshot ->
-            if (documentSnapshot.exists()) {
+            if (documentSnapshot.exists())
+            {
                 val currentFinishedCount = documentSnapshot.getLong("finished") ?: 0
                 val newFinishedCount = currentFinishedCount + 1
                 goalRef.update("finished", newFinishedCount)
@@ -239,7 +237,9 @@ fun updateYearlyFinishedBooks(
                         Log.e(LOG_DB, "Error updating yearly finished books", e)
                         Utils.showMessage(context, "Error updating yearly finished books.")
                     }
-            } else {
+            }
+            else
+            {
                 Utils.showMessage(context, "Yearly goal document does not exist for $currentYear")
             }
         }
@@ -247,7 +247,6 @@ fun updateYearlyFinishedBooks(
             Log.e(LOG_DB, "Error checking yearly goal document", e)
         }
 }
-
 
 fun setUserDailyGoal(
     option: String,

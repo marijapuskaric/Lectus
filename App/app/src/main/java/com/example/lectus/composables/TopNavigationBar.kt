@@ -1,6 +1,5 @@
 package com.example.lectus.composables
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.Tab
@@ -13,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.lectus.getFontFamily
-
 
 @Composable
 fun TopNavigationBar(
@@ -31,17 +29,17 @@ fun TopNavigationBar(
                     .height(2.dp)
                     .background(MaterialTheme.colorScheme.primary),
                 color = MaterialTheme.colorScheme.primary
-
             )
         }
     ) {
-        tabs.forEachIndexed { index, s ->
+        tabs.forEachIndexed { index, tab ->
             Tab(
                 selected = selectedTabIndex == index,
                 onClick = { onTabSelected(index) },
-                text = {
+                text =
+                {
                     Text(
-                        text = s,
+                        text = tab,
                         fontFamily = getFontFamily(),
                         color = MaterialTheme.colorScheme.background
 

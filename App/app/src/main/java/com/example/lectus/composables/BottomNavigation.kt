@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.lectus.getFontFamily
-import com.example.lectus.mainnavigation.BottomNavigationScreens
+import com.example.lectus.data.BottomNavigationScreens
 
 
 @RequiresApi(Build.VERSION_CODES.O)

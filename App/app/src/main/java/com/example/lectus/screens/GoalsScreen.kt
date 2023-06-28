@@ -33,25 +33,23 @@ fun GoalsScreen(
         stringResource(id = R.string.yearly_goal),
         stringResource(id = R.string.daily_goal)
     )
-
         Column(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
                 .fillMaxSize()
                 .padding(bottom = 80.dp)
-        )
-        {
+        ) {
             Header()
             TopNavigationBar(
                 tabs = itemsTop,
                 onTabSelected = { selectedTopItem = it },
                 selectedTabIndex = selectedTopItem
             )
-            when (selectedTopItem) {
+            when (selectedTopItem)
+            {
                 0 -> YearlyGoalScreen()
                 1 -> DailyGoalScreen()
             }
-
         }
     CustomBottomNavigation(mainNavController = mainNavController)
 }

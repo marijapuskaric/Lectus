@@ -1,7 +1,7 @@
 package com.example.lectus.data
 
 data class BookData(
-    val title: String,
+    val title: String? = null,
     val authors: ArrayList<String>? = null,
     val description: String? = null,
     val publisher: String? = null,

@@ -10,7 +10,8 @@ import dagger.hilt.android.components.ViewModelComponent
 
 @Module
 @InstallIn(ViewModelComponent::class)
-class AppModule {
+class AppModule
+{
     @Provides
     fun provideAuthRepository(): AuthRepository = AuthRepositoryImpl(
         auth = Firebase.auth

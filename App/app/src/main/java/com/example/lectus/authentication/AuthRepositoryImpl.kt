@@ -1,9 +1,13 @@
 package com.example.lectus.authentication
 
+import android.content.Context
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.example.lectus.data.Response
 import com.example.lectus.db.addUserToFirestore
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,49 +20,66 @@ import javax.inject.Singleton
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth
-) : AuthRepository {
+) : AuthRepository
+{
     override val currentUser get() = auth.currentUser
-    val db = Firebase.firestore
+    var signUpResponse by mutableStateOf<SignUpResponse>(Response.Success(false))
+        private set
     override suspend fun firebaseSignUpWithEmailAndPassword(
-        email: String, password: String, username: String
-    ): SignUpResponse {
-        return try {
-            auth.createUserWithEmailAndPassword(email, password).await()
-            val user = auth.currentUser
-            if (user != null) {
-                addUserToFirestore(username, email, user.uid, db)
-            }
-            Response.Success(true)
-        } catch (e: Exception) {
+        email: String, password: String, username: String, context: Context, db: FirebaseFirestore
+    ): SignUpResponse
+    {
+        return try
+        {
+            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener { task ->
+                    signUpResponse = if (task.isSuccessful)
+                    {
+                        Utils.showMessage(context, "Registration successful")
+                        val userUid = FirebaseAuth.getInstance().currentUser?.uid
+                        if (userUid != null)
+                        {
+                            addUserToFirestore(username, email, userUid, db)
+                        }
+                        Response.Success(true)
+                    } else
+                    {
+                        Utils.showMessage(context,"Registration failed: ${task.exception?.message}")
+                        Response.Failure(Exception(task.exception?.message))
+                    }
+                }
+            Response.Loading
+        }
+        catch (e: Exception)
+        {
             Response.Failure(e)
         }
     }
 
     override suspend fun firebaseSignInWithEmailAndPassword(
         email: String, password: String
-    ): SignInResponse {
-        return try {
+    ): SignInResponse
+    {
+        return try
+        {
             auth.signInWithEmailAndPassword(email, password).await()
             Response.Success(true)
-        } catch (e: Exception) {
+        }
+        catch (e: Exception)
+        {
             Response.Failure(e)
         }
     }
 
-    override suspend fun reloadFirebaseUser(): ReloadUserResponse {
-        return try {
-            auth.currentUser?.reload()?.await()
-            Response.Success(true)
-        } catch (e: Exception) {
-            Response.Failure(e)
-        }
-    }
-
-    override suspend fun sendPasswordResetEmail(email: String): SendPasswordResetEmailResponse {
-        return try {
+    override suspend fun sendPasswordResetEmail(email: String): SendPasswordResetEmailResponse
+    {
+        return try
+        {
             auth.sendPasswordResetEmail(email).await()
             Response.Success(true)
-        } catch (e: Exception) {
+        }
+        catch (e: Exception)
+        {
             Response.Failure(e)
         }
     }

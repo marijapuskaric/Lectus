@@ -1,5 +1,6 @@
 package com.example.lectus.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Circle
@@ -35,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.MutableLiveData
 import com.example.lectus.R
-import com.example.lectus.composables.SetYearlyGoalDialog
+import com.example.lectus.composables.dialogs.SetYearlyGoalDialog
 import com.example.lectus.db.getYearlyGoal
 import com.example.lectus.getFontFamily
 import com.google.firebase.auth.FirebaseAuth
@@ -57,7 +59,8 @@ fun YearlyGoalScreen()
     var goalBooks = 0
     var finishedBooks = 0
     val showSetYearlyGoalDialog = remember { mutableStateOf(false) }
-    if (showSetYearlyGoalDialog.value) {
+    if (showSetYearlyGoalDialog.value)
+    {
         SetYearlyGoalDialog(
             showDialog = showSetYearlyGoalDialog.value,
             context = context,
@@ -66,7 +69,6 @@ fun YearlyGoalScreen()
     if (currentUserUid != null)
     {
         getYearlyGoal(currentUserUid,db){ goal, finished ->
-
             goalLiveData.value = goal
             finishedLiveData.value = finished
             goalBooks = goal.toInt()
@@ -82,7 +84,8 @@ fun YearlyGoalScreen()
         finishedBooks = finished!!.toInt()
     }
     Box(contentAlignment = Alignment.TopCenter,
-        modifier = Modifier.fillMaxSize()) {
+        modifier = Modifier.fillMaxSize()
+    ) {
         Column(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -91,8 +94,7 @@ fun YearlyGoalScreen()
             Row(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.padding(top = 10.dp)
-            )
-            {
+            ) {
                 Text(
                     text = stringResource(id = R.string.year),
                     fontSize = 20.sp,
@@ -126,10 +128,15 @@ fun YearlyGoalScreen()
                     fontWeight = FontWeight.Bold
                 )
             }
-            Spacer(modifier = Modifier.padding(10.dp))
-            if (goal != null) {
-                Box(modifier = Modifier.weight(1f))
-                {
+            Spacer(modifier = Modifier.padding(20.dp))
+            if (goal != null)
+            {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(10.dp)
+                        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
+                ) {
                     GoalGrid(goalBooks = goalBooks, finishedBooks = finishedBooks)
                 }
             }
@@ -172,9 +179,10 @@ fun GoalGrid (
 ){
     val gridColumns = 3
     val iconSize = 45.dp
-    val bookStates = remember {
+    val bookStates = remember{
         val books = mutableListOf<Boolean>()
-        for (i in 0 until goalBooks) {
+        for (i in 0 until goalBooks)
+        {
             books.add(i < finishedBooks)
         }
         books
@@ -182,12 +190,15 @@ fun GoalGrid (
     LazyVerticalGrid(
         columns = GridCells.Fixed(gridColumns),
         contentPadding = PaddingValues(top = 15.dp, start = 15.dp, end = 15.dp, bottom = 15.dp),
-        content = {
+        content =
+        {
             items(bookStates.size) { index ->
-                val iconVector: ImageVector = if (bookStates[index]) {
+                val iconVector: ImageVector = if (bookStates[index])
+                {
                     Icons.Default.Circle
                 }
-                else {
+                else
+                {
                     Icons.Default.RadioButtonUnchecked
                 }
                 Icon(

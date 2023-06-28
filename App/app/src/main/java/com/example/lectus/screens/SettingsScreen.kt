@@ -35,7 +35,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavHostController
 import com.example.lectus.R
 import com.example.lectus.composables.CustomBottomNavigation
-import com.example.lectus.composables.ResetPasswordDialog
+import com.example.lectus.composables.dialogs.ResetPasswordDialog
 import com.example.lectus.data.TAG
 import com.example.lectus.db.getUser
 import com.example.lectus.getFontFamily
@@ -53,7 +53,6 @@ fun SettingsScreen(
     themeViewModel: ThemeViewModel,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
-
     val db = Firebase.firestore
     val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
     val usernameLiveData = MutableLiveData<String>()
@@ -74,130 +73,130 @@ fun SettingsScreen(
             }
         }
     }
-    if (showResetPasswordDialog.value ) {
+    if (showResetPasswordDialog.value )
+    {
         ResetPasswordDialog(
             email = email ?: "",
             viewModel = viewModel,
             showDialog = showResetPasswordDialog.value,
             onDismiss = { showResetPasswordDialog.value = false })
     }
-
-        Column(
+    Column(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .fillMaxSize()
+    ) {
+        Header()
+        Box(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
                 .fillMaxSize()
-        )
-        {
-            Header()
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 48.dp),
-                contentAlignment = Alignment.TopCenter
+                .padding(top = 48.dp),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+                Text(
+                    text = stringResource(id = R.string.settings),
+                    fontSize = 24.sp,
+                    fontFamily = getFontFamily(),
+                    color = MaterialTheme.colorScheme.tertiary
+                )
+                Spacer(modifier = Modifier.padding(20.dp))
+                if (username != null && email != null)
+                {
                     Text(
-                        text = stringResource(id = R.string.settings),
-                        fontSize = 24.sp,
-                        fontFamily = getFontFamily(),
-                        color = MaterialTheme.colorScheme.tertiary
-                    )
-                    Spacer(modifier = Modifier.padding(20.dp))
-                    if (username != null && email != null) {
-                        Text(
-                            text = username.toString(),
-                            fontSize = 35.sp,
-                            fontFamily = getFontFamily(),
-                            color = MaterialTheme.colorScheme.tertiary
-                        )
-                        Spacer(modifier = Modifier.padding(10.dp))
-                        Row(horizontalArrangement = Arrangement.Center)
-                        {
-                            Text(
-                                text = stringResource(id = R.string.email_display),
-                                fontSize = 18.sp,
-                                fontFamily = getFontFamily(),
-                                color = MaterialTheme.colorScheme.tertiary
-                            )
-                            Spacer(modifier = Modifier.padding(5.dp))
-                            Text(
-                                text = email.toString(),
-                                fontSize = 18.sp,
-                                fontFamily = getFontFamily(),
-                                color = MaterialTheme.colorScheme.tertiary
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.padding(20.dp))
-                    Button(
-                        onClick = {
-                            showResetPasswordDialog.value = true
-                        },
-                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.change_password),
-                            fontFamily = getFontFamily(),
-                            color = MaterialTheme.colorScheme.background
-                        )
-                    }
-                    Spacer(modifier = Modifier.padding(20.dp))
-                    Text(
-                        text = stringResource(id = R.string.change_theme),
-                        fontSize = 16.sp,
+                        text = username.toString(),
+                        fontSize = 35.sp,
                         fontFamily = getFontFamily(),
                         color = MaterialTheme.colorScheme.tertiary
                     )
                     Spacer(modifier = Modifier.padding(10.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Button(
-                            onClick = {
-                                themeViewModel.setDarkTheme(false)
-                            },
-                            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
-
-                            ) {
-                            Text(
-                                text = stringResource(id = R.string.light_theme),
-                                fontFamily = getFontFamily(),
-                                color = MaterialTheme.colorScheme.background
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(15.dp))
-                        Button(
-                            onClick = {
-                                themeViewModel.setDarkTheme(true)
-                            },
-                            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.dark_theme),
-                                fontFamily = getFontFamily(),
-                                color = MaterialTheme.colorScheme.background
-                            )
-                        }
+                    Row(horizontalArrangement = Arrangement.Center)
+                    {
+                        Text(
+                            text = stringResource(id = R.string.email_display),
+                            fontSize = 18.sp,
+                            fontFamily = getFontFamily(),
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Text(
+                            text = email.toString(),
+                            fontSize = 18.sp,
+                            fontFamily = getFontFamily(),
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
                     }
-                    Spacer(modifier = Modifier.padding(20.dp))
+                }
+                Spacer(modifier = Modifier.padding(20.dp))
+                Button(
+                    onClick =
+                    {
+                        showResetPasswordDialog.value = true
+                    },
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.change_password),
+                        fontFamily = getFontFamily(),
+                        color = MaterialTheme.colorScheme.background
+                    )
+                }
+                Spacer(modifier = Modifier.padding(20.dp))
+                Text(
+                    text = stringResource(id = R.string.change_theme),
+                    fontSize = 16.sp,
+                    fontFamily = getFontFamily(),
+                    color = MaterialTheme.colorScheme.tertiary
+                )
+                Spacer(modifier = Modifier.padding(10.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
                     Button(
-                        onClick = { viewModel.signOut() },
+                        onClick =
+                        {
+                            themeViewModel.setDarkTheme(false)
+                        },
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.light_theme),
+                            fontFamily = getFontFamily(),
+                            color = MaterialTheme.colorScheme.background
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(15.dp))
+                    Button(
+                        onClick =
+                        {
+                            themeViewModel.setDarkTheme(true)
+                        },
                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
                     ) {
                         Text(
-                            text = stringResource(id = R.string.log_out),
+                            text = stringResource(id = R.string.dark_theme),
                             fontFamily = getFontFamily(),
                             color = MaterialTheme.colorScheme.background
                         )
                     }
                 }
+                Spacer(modifier = Modifier.padding(20.dp))
+                Button(
+                    onClick = { viewModel.signOut() },
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.log_out),
+                        fontFamily = getFontFamily(),
+                        color = MaterialTheme.colorScheme.background
+                    )
+                }
             }
-
         }
+    }
     CustomBottomNavigation(mainNavController = mainNavController)
-
 }

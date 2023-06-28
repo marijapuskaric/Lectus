@@ -3,6 +3,7 @@ package com.example.lectus.screens
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Circle
@@ -42,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.MutableLiveData
 import com.example.lectus.R
-import com.example.lectus.composables.SetDailyGoalDialog
+import com.example.lectus.composables.dialogs.SetDailyGoalDialog
 import com.example.lectus.data.LOG_DB
 import com.example.lectus.db.addDailyGoalsAchieved
 import com.example.lectus.db.getDailyGoal
@@ -75,11 +77,13 @@ fun DailyGoalScreen()
     var chosenNumber = 0
     var chosenOption = option
     val showSetDailyGoalDialog = remember { mutableStateOf(false) }
-    if (showSetDailyGoalDialog.value ) {
+    if (showSetDailyGoalDialog.value )
+    {
         SetDailyGoalDialog(
             showDialog = showSetDailyGoalDialog.value,
             context = context,
-            onDismiss = { showSetDailyGoalDialog.value = false })
+            onDismiss = { showSetDailyGoalDialog.value = false }
+        )
     }
     if (currentUserUid != null)
     {
@@ -89,7 +93,8 @@ fun DailyGoalScreen()
                 optionLiveData.value = option
                 numberLiveData.value = number
             }
-            else{
+            else
+            {
                 Log.e(LOG_DB, "Failed to retrieve user goal data")
             }
         }
@@ -104,7 +109,8 @@ fun DailyGoalScreen()
         if (option == "Chapters") chosenOption = "Chapter"
     }
     Box(contentAlignment = Alignment.TopCenter,
-        modifier = Modifier.fillMaxSize()) {
+        modifier = Modifier.fillMaxSize())
+    {
         Column(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -121,7 +127,8 @@ fun DailyGoalScreen()
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.padding(5.dp))
-                if (chosenNumber == 0 && chosenOption == null){
+                if (chosenNumber == 0 && chosenOption == null)
+                {
                     Text(
                         text = stringResource(id = R.string.not_set_daily_goal),
                         fontSize = 18.sp,
@@ -130,7 +137,8 @@ fun DailyGoalScreen()
                         fontWeight = FontWeight.Bold
                     )
                 }
-                else {
+                else
+                {
                     Text(
                         text = chosenNumber.toString(),
                         fontSize = 18.sp,
@@ -163,9 +171,13 @@ fun DailyGoalScreen()
                 fontFamily = getFontFamily(),
                 color = MaterialTheme.colorScheme.tertiary,
             )
-            Spacer(modifier = Modifier.padding(10.dp))
-            Box(modifier = Modifier.weight(1f))
-            {
+            Spacer(modifier = Modifier.padding(20.dp))
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(20.dp)
+                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
+            ) {
                 if (currentUserUid != null)
                 {
                     MonthGrid(getDaysInCurrentMonth(), currentYear, monthName, currentUserUid, db)
@@ -199,7 +211,8 @@ fun MonthGrid(
     val iconSize = 35.dp
     val dayStates = remember {
         mutableStateListOf<Boolean>().apply {
-            for (i in 0 until daysInMonth) {
+            for (i in 0 until daysInMonth)
+            {
                 add(false)
             }
         }
@@ -209,12 +222,17 @@ fun MonthGrid(
     LazyVerticalGrid(
         columns = GridCells.Fixed(gridColumns),
         contentPadding = PaddingValues(top = 15.dp, start = 15.dp, end = 15.dp, bottom = 15.dp),
-        content = {
+        content =
+        {
             items(dayStates.size) { index ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    val iconVector: ImageVector = if (dayStates[index]) {
+                Row(verticalAlignment = Alignment.CenterVertically)
+                {
+                    val iconVector: ImageVector = if (dayStates[index])
+                    {
                         Icons.Default.Circle
-                    } else {
+                    }
+                    else
+                    {
                         Icons.Default.RadioButtonUnchecked
                     }
                     Text(
@@ -232,9 +250,9 @@ fun MonthGrid(
                         contentDescription = null,
                         modifier = Modifier
                             .size(iconSize)
-                            .clickable {
-                                dayStates[index] =
-                                    !dayStates[index]
+                            .clickable
+                            {
+                                dayStates[index] = !dayStates[index]
                                 achieved = !achieved
                                 addDailyGoalsAchieved(
                                     currentYear,
@@ -247,23 +265,23 @@ fun MonthGrid(
                             },
                         tint = MaterialTheme.colorScheme.secondary
                     )
-
                 }
             }
         }
     )
 }
 @RequiresApi(Build.VERSION_CODES.O)
-fun getDaysInCurrentMonth(): Int {
+fun getDaysInCurrentMonth(): Int
+{
     val currentDate = LocalDate.now()
     val yearMonth = YearMonth.from(currentDate)
     return yearMonth.lengthOfMonth()
 }
 
-fun getMonthNameFromCalendar(currentMonth: Int): String {
+fun getMonthNameFromCalendar(currentMonth: Int): String
+{
     val calendar = Calendar.getInstance()
     calendar.set(Calendar.MONTH, currentMonth)
-
     val monthFormatter = SimpleDateFormat("MMMM", Locale.getDefault())
     return monthFormatter.format(calendar.time)
 }

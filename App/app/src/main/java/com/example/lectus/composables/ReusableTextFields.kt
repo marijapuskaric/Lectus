@@ -69,11 +69,14 @@ fun CustomOutlinedTextField(
             }
         },
         isError = showError,
-        trailingIcon = {
+        trailingIcon =
+        {
             if (showError && !isPasswordField)
                 Icon(imageVector = Icons.Filled.Error, contentDescription = stringResource(id = R.string.show_error))
-            if(isPasswordField){
-                IconButton(onClick = { onVisibilityChange(!isPasswordVisible) }) {
+            if(isPasswordField)
+            {
+                IconButton(onClick = { onVisibilityChange(!isPasswordVisible) })
+                {
                     Icon(
                         imageVector = if(isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                         contentDescription = stringResource(id = R.string.toggle_visibility),
@@ -82,7 +85,8 @@ fun CustomOutlinedTextField(
                 }
             }
         },
-        visualTransformation = when {
+        visualTransformation = when
+        {
             isPasswordField && isPasswordVisible -> VisualTransformation.None
             isPasswordField -> PasswordVisualTransformation()
             else -> VisualTransformation.None
@@ -90,7 +94,8 @@ fun CustomOutlinedTextField(
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions
     )
-    if (showError) {
+    if (showError)
+    {
         Text(
             text = errorMessage,
             color = MaterialTheme.colorScheme.error,
@@ -101,5 +106,4 @@ fun CustomOutlinedTextField(
             textAlign = TextAlign.Left
         )
     }
-
 }

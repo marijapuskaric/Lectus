@@ -41,8 +41,8 @@ import com.example.lectus.viewmodels.SearchBookViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBookScreen(searchBookViewModel: SearchBookViewModel = hiltViewModel()) {
-
+fun SearchBookScreen(searchBookViewModel: SearchBookViewModel = hiltViewModel())
+{
     var search by rememberSaveable { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
     val books = searchBookViewModel.books.observeAsState()
@@ -53,55 +53,57 @@ fun SearchBookScreen(searchBookViewModel: SearchBookViewModel = hiltViewModel())
 
     var selectedBook by remember { mutableStateOf<Book?>(null) }
 
-
-    if (isSearchChanged) {
+    if (isSearchChanged)
+    {
         selectedBook = null
     }
     Column(
         Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)) {
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(color = MaterialTheme.colorScheme.primary)
         ) {
-                OutlinedTextField(
-                    value = search,
-                    onValueChange = { search = it },
-                    label = {
-                        Text(
-                            text = stringResource(id = R.string.search),
-                            style = TextStyle(
-                                fontSize = 12.sp,
-                                fontFamily = getFontFamily(),
-                                color = MaterialTheme.colorScheme.tertiary
-                            )
+            OutlinedTextField(
+                value = search,
+                onValueChange = { search = it },
+                label =
+                {
+                    Text(
+                        text = stringResource(id = R.string.search),
+                        style = TextStyle(
+                            fontSize = 12.sp,
+                            fontFamily = getFontFamily(),
+                            color = MaterialTheme.colorScheme.tertiary
                         )
-                    },
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.tertiary,
-                        focusedBorderColor = MaterialTheme.colorScheme.tertiary),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(70.dp)
-                        .padding(horizontal = 15.dp, vertical = 5.dp),
-                    singleLine = true,
-                    shape = RoundedCornerShape(10.dp),
-                    textStyle = TextStyle(fontSize = 12.sp, color = MaterialTheme.colorScheme.tertiary, fontFamily = getFontFamily()),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            focusManager.clearFocus()
-                            searchBookViewModel.getBooksList(search)
-
-                        }
                     )
+                },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.tertiary,
+                    focusedBorderColor = MaterialTheme.colorScheme.tertiary),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(70.dp)
+                    .padding(horizontal = 15.dp, vertical = 5.dp),
+                singleLine = true,
+                shape = RoundedCornerShape(10.dp),
+                textStyle = TextStyle(fontSize = 12.sp, color = MaterialTheme.colorScheme.tertiary, fontFamily = getFontFamily()),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone =
+                    {
+                        focusManager.clearFocus()
+                        searchBookViewModel.getBooksList(search)
+                    }
                 )
+            )
         }
         Row(
             Modifier.fillMaxWidth(),
@@ -115,18 +117,20 @@ fun SearchBookScreen(searchBookViewModel: SearchBookViewModel = hiltViewModel())
                 textAlign = TextAlign.Center
             )
         }
-
-        Column(Modifier.weight(1f)) {
-            if (selectedBook != null) {
+        Column(Modifier.weight(1f)
+        ) {
+            if (selectedBook != null)
+            {
                 BookDetailsScreen(book = selectedBook!!, navigateBack = { selectedBook = null }, readingStatus = false)
-            } else {
+            }
+            else
+            {
                 RecyclerView(add = true, edit = false, books.value) { book ->
                     selectedBook = book
                 }
             }
         }
     }
-    
 }
 
 

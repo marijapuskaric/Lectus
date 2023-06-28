@@ -22,7 +22,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -57,8 +56,7 @@ import com.example.lectus.authentication.Utils.Companion.showMessage
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     onNavRegisterPage: () -> Unit,
-    )
-{
+) {
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
     var email by rememberSaveable { mutableStateOf("") }
@@ -87,7 +85,8 @@ fun LoginScreen(
     ) {
         Header()
         Spacer(modifier = Modifier.height(70.dp))
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(10.dp)) {
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(10.dp)
+        ) {
             Card(
                 modifier = Modifier
                     .padding(32.dp)
@@ -146,8 +145,7 @@ fun LoginScreen(
                             .requiredWidth(IntrinsicSize.Max)
                             .align(Alignment.Start),
                         textAlign = TextAlign.Left,
-
-                        )
+                    )
                     CustomOutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
@@ -167,17 +165,15 @@ fun LoginScreen(
                     )
                     Spacer(modifier = Modifier.height(30.dp))
                     Button(
-                        onClick = {
+                        onClick =
+                        {
                             validateData(email, password)
                             viewModel.signInWithEmailAndPassword(
                                 email,
                                 password
                             )
-
                         },
                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
-
-
                     ) {
                         Text(
                             fontFamily = getFontFamily(),
@@ -195,21 +191,10 @@ fun LoginScreen(
                 }
             }
         }
-
         Login(
             showErrorMessage = { errorMessage ->
                 showMessage(context, errorMessage)
             }
         )
-    }
-}
-
-@Composable
-fun ProgressBar() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ){
-        CircularProgressIndicator(color = MaterialTheme.colorScheme.secondary)
     }
 }

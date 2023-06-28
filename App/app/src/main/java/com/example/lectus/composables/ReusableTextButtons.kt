@@ -16,9 +16,9 @@ fun CustomTextButton(
     value: String,
     fontFamily: androidx.compose.ui.text.font.FontFamily,
     onContinueClicked: () -> Unit
-)
-{
-    TextButton(onClick = onContinueClicked) {
+) {
+    TextButton(onClick = onContinueClicked)
+    {
         Text(
             fontFamily = fontFamily,
             fontSize = 10.sp,

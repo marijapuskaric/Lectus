@@ -48,12 +48,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.lectus.MainActivity
 import com.example.lectus.R
 import com.example.lectus.authentication.Register
+import com.example.lectus.authentication.Utils
 import com.example.lectus.composables.CustomOutlinedTextField
 import com.example.lectus.composables.CustomTextButton
 import com.example.lectus.composables.Header
 import com.example.lectus.getFontFamily
 import com.example.lectus.viewmodels.RegisterViewModel
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 
 @SuppressLint("UnrememberedMutableState")
@@ -64,6 +66,7 @@ fun RegisterScreen(
 ){
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
+    val db = Firebase.firestore
     var username by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -81,16 +84,14 @@ fun RegisterScreen(
     val validatePasswordError = stringResource(id = R.string.vaildate_password_e)
     val validateEqualPasswordError = stringResource(id = R.string.validate_equal_pswrd)
 
-    fun validateData(email: String, password: String, confirmPassword: String): Boolean {
+    fun validateData(email: String, password: String, confirmPassword: String): Boolean
+    {
         val passwordRegex = "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}".toRegex()
-
-
         validateEmail = Patterns.EMAIL_ADDRESS.matcher(email).matches()
         validatePassword = passwordRegex.matches(password)
         validateConfirmPassword = passwordRegex.matches(confirmPassword)
         validatePasswordsEqual = password == confirmPassword
         validateUsername = username.isNotBlank()
-
         return validateEmail && validatePassword && validateConfirmPassword && validatePasswordsEqual && validateUsername
     }
     fun validate (
@@ -98,32 +99,27 @@ fun RegisterScreen(
         email: String,
         password: String,
         confirmPassword: String
-    ): Boolean{
-        if (validateData(email, password, confirmPassword)){
-            Log.d(MainActivity::class.java.simpleName, "Username: $username, email: $email, password: $password, confirm password: $confirmPassword")
-            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener { task ->
-                    if(task.isSuccessful){
-                        Toast.makeText(context, "Registration successful", Toast.LENGTH_SHORT).show()
-                    }
-                    else{
-                        Toast.makeText(context, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                    }
-                }
-        }else{
-            Toast.makeText(context, "Please, review fields", Toast.LENGTH_SHORT).show()
+    ): Boolean
+    {
+        if (validateData(email, password, confirmPassword))
+        {
+            viewModel.signUpWithEmailAndPassword(email, password, username, context, db)
+        }
+        else
+        {
+            Utils.showMessage(context, "Please, review fields")
         }
         return validateEmail && validatePassword && validateConfirmPassword && validatePasswordsEqual && validateUsername
     }
-
     Column(
         Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
         Header()
-        Spacer(modifier = Modifier.height(70.dp))
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(10.dp)) {
+        Spacer(modifier = Modifier.height(5.dp))
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(10.dp))
+        {
             Card(
                 modifier = Modifier
                     .padding(32.dp)
@@ -170,7 +166,6 @@ fun RegisterScreen(
                             onNext = { focusManager.moveFocus(FocusDirection.Down) }
                         )
                     )
-
                     Text(
                         fontFamily = getFontFamily(),
                         fontSize = 10.sp,
@@ -254,23 +249,19 @@ fun RegisterScreen(
                     )
                     Spacer(modifier = Modifier.height(30.dp))
                     Button(
-                        onClick = {
-                            if (validate(username, email, password, confirmPassword)) {
-                                viewModel.signUpWithEmailAndPassword(email, password, username)
-                            }
-
+                        onClick =
+                        {
+                            validate(username, email, password, confirmPassword)
                         },
                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
-
                     ) {
                         Text(
                             fontFamily = getFontFamily(),
                             text = stringResource(id = R.string.register),
                             color = MaterialTheme.colorScheme.background
                         )
-
                     }
-                    Spacer(modifier = Modifier.height(30.dp))
+                    Spacer(modifier = Modifier.height(15.dp))
                     CustomTextButton(
                         value = stringResource(id = R.string.login),
                         fontFamily = getFontFamily(),

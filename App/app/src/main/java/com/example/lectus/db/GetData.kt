@@ -23,7 +23,6 @@ fun getBooksFromFirestore(
     val booksCollection = db.collection(USER_BOOKS_COLLECTION)
         .document(currentUserUid)
         .collection(BOOKS_COLLECTION)
-
     booksCollection.get()
         .addOnSuccessListener { querySnapshot ->
             val books = querySnapshot.documents.mapNotNull { documentSnapshot ->
@@ -39,7 +38,7 @@ fun getBooksFromFirestore(
 }
 
 fun getBookId(
-    title : String,
+    title : String?,
     authors: List<String>?,
     publisher: String?,
     pageCount: Long?,
@@ -51,18 +50,20 @@ fun getBookId(
     db.collection(USER_BOOKS_COLLECTION)
         .document(currentUserUid)
         .collection(BOOKS_COLLECTION)
-        .whereEqualTo("title", title)
+        .whereEqualTo("title", (title ?: "-"))
         .whereEqualTo("authors", authors)
         .whereEqualTo("publisher", publisher)
         .whereEqualTo("image", image)
         .whereEqualTo("pageCount", pageCount)
         .get()
         .addOnSuccessListener { querySnapshot ->
-            if(!querySnapshot.isEmpty){
+            if(!querySnapshot.isEmpty)
+            {
                val bookId = querySnapshot.documents[0].id
                 callback(bookId)
             }
-            else{
+            else
+            {
                 callback(null)
             }
         }
@@ -88,7 +89,8 @@ fun getUser (
                 val email = userDocument.getString("email")
                 callback.invoke(username, email)
             }
-            else{
+            else
+            {
                 callback.invoke(null, null)
             }
         }
@@ -110,14 +112,14 @@ fun getYearlyGoal(
         .document(currentYear.toString())
     goalRef.get()
         .addOnSuccessListener { documentSnapshot ->
-            if (documentSnapshot.exists()) {
+            if (documentSnapshot.exists())
+            {
                 val goal = documentSnapshot.getLong("goal")
                 val finished = documentSnapshot.getLong("finished")
-                Log.d(LOG_DB, goal.toString())
-                Log.d(LOG_DB, finished.toString())
                 if (goal != null && finished != null) callback(goal, finished)
             }
-            else{
+            else
+            {
                 callback(0, 0)
             }
         }
@@ -125,7 +127,6 @@ fun getYearlyGoal(
             Log.e(LOG_DB, "Error retrieving yearly goal", e)
             callback(0, 0)
         }
-
 }
 
 fun getDailyGoal(
@@ -139,14 +140,14 @@ fun getDailyGoal(
         .document(DAILY_GOAL)
     goalRef.get()
         .addOnSuccessListener { documentSnapshot ->
-            if (documentSnapshot.exists()) {
+            if (documentSnapshot.exists())
+            {
                 val option = documentSnapshot.getString("option")
                 val number = documentSnapshot.getLong("number")
-                Log.d(LOG_DB, option.toString())
-                Log.d(LOG_DB, number.toString())
                 callback(option, number)
             }
-            else{
+            else
+            {
                 callback(null, null)
             }
         }
@@ -173,17 +174,20 @@ fun getMonthlyAchievements(
         .collection(DAY_GOAL_COLLECTION)
         .get()
         .addOnCompleteListener { task ->
-            if (task.isSuccessful) {
+            if (task.isSuccessful)
+            {
                 val querySnapshot = task.result
                 querySnapshot?.documents?.forEach { document ->
                     val day = document.id.toIntOrNull()
                     val achieved = document.getBoolean("achievedGoal")
-                    if (day != null && day in 1..daysInMonth) {
+                    if (day != null && day in 1..daysInMonth)
+                    {
                         dayStates[day - 1] = achieved ?: false
                     }
                 }
-            } else {
-                // Handle the failure case
+            }
+            else
+            {
                 Log.e(LOG_DB, "Error fetching achievements: ${task.exception}")
             }
         }

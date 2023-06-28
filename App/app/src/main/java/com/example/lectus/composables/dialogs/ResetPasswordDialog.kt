@@ -1,4 +1,4 @@
-package com.example.lectus.composables
+package com.example.lectus.composables.dialogs
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,9 +34,9 @@ fun ResetPasswordDialog(
     viewModel: SettingsViewModel,
     showDialog: Boolean,
     onDismiss: () -> Unit
-)
-{
-    if (showDialog) {
+) {
+    if (showDialog)
+    {
         Dialog(
             onDismissRequest = { onDismiss() },
         ) {
@@ -62,25 +62,26 @@ fun ResetPasswordDialog(
                             .padding(bottom = 35.dp, top = 35.dp)
                             .align(Alignment.CenterHorizontally)
                     )
-
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Button(
-                            onClick = {
+                            onClick =
+                            {
                                 viewModel.viewModelScope.launch {
                                     viewModel.resetPassword(email)
                                 }
                                 onDismiss()
                             },
                             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
-
-                            ) {
-                            Text(text = stringResource(id = R.string.confirmation),
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.confirmation),
                                 fontFamily = getFontFamily(),
-                                color = MaterialTheme.colorScheme.background)
+                                color = MaterialTheme.colorScheme.background
+                            )
                         }
                         Spacer(modifier = Modifier.width(15.dp))
                         Button(

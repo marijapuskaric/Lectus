@@ -43,21 +43,18 @@ fun AddBookScreen(
                 .background(MaterialTheme.colorScheme.background)
                 .fillMaxSize()
                 .padding(bottom = 80.dp)
-        )
-        {
+        ) {
             Header()
             TopNavigationBar(
                 tabs = itemsTop,
                 onTabSelected = { selectedTopItem = it },
                 selectedTabIndex = selectedTopItem
             )
-            when (selectedTopItem) {
+            when (selectedTopItem)
+            {
                 0 -> SearchBookScreen(searchBookViewModel)
                 1 -> AddMyBookScreen()
             }
-
         }
         CustomBottomNavigation(mainNavController = mainNavController)
-
-
 }
