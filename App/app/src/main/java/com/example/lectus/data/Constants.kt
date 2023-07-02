@@ -1,7 +1,6 @@
 package com.example.lectus.data
 
 const val TAG = "AppTag"
-const val API_KEY = "AIzaSyCmpziL380ybxxeRruTmMuyPlGM5uL_00o"
 const val BASE_URL = "https://www.googleapis.com/books/v1/"
 const val LOG_DB = "Firestore"
 const val USER_BOOKS_COLLECTION = "user_books"

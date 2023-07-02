@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.lectus.R
+import com.example.lectus.authentication.Utils
 import com.example.lectus.composables.CustomOutlinedTextField
 import com.example.lectus.db.updateYearlyGoal
 import com.example.lectus.getFontFamily
@@ -141,9 +142,21 @@ fun SetYearlyGoalDialog(
                     ) {
                         Button(
                             onClick = {
-                                if (yearlyGoal.isNotEmpty() && currentUserUid != null) {
-                                    updateYearlyGoal(yearlyGoal.toInt(), currentUserUid, db, context)
-
+                                if (yearlyGoal.isNotEmpty() && currentUserUid != null)
+                                {
+                                    if (yearlyGoal.toInt() > 0)
+                                    {
+                                        updateYearlyGoal(
+                                            yearlyGoal.toInt(),
+                                            currentUserUid,
+                                            db,
+                                            context
+                                        )
+                                    }
+                                    else
+                                    {
+                                        Utils.showMessage(context, "Yearly goal has to be 1 or more.")
+                                    }
                                 }
                                 onDismiss()
                             },

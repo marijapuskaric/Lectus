@@ -131,13 +131,18 @@ fun YearlyGoalScreen()
             Spacer(modifier = Modifier.padding(20.dp))
             if (goal != null)
             {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(10.dp)
-                        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
-                ) {
-                    GoalGrid(goalBooks = goalBooks, finishedBooks = finishedBooks)
+                if (goal!! > 0) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(10.dp)
+                            .background(
+                                MaterialTheme.colorScheme.primary,
+                                RoundedCornerShape(10.dp)
+                            )
+                    ) {
+                        GoalGrid(goalBooks = goalBooks, finishedBooks = finishedBooks)
+                    }
                 }
             }
             Spacer(modifier = Modifier.padding(10.dp))

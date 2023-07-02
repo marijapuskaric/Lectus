@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.lectus.R
+import com.example.lectus.authentication.Utils
 import com.example.lectus.composables.CustomOutlinedTextField
 import com.example.lectus.db.setUserDailyGoal
 import com.example.lectus.getFontFamily
@@ -183,7 +184,14 @@ fun SetDailyGoalDialog(
                             {
                                 if (selectedGoal.isNotEmpty() && dailyGoal.isNotEmpty() && currentUserUid != null)
                                 {
-                                    setUserDailyGoal(selectedGoal, dailyGoal.toInt(), currentUserUid, db, context)
+                                    if (dailyGoal.toInt() > 0)
+                                    {
+                                        setUserDailyGoal(selectedGoal, dailyGoal.toInt(), currentUserUid, db, context)
+                                    }
+                                    else
+                                    {
+                                        Utils.showMessage(context, "Daily goal has to be 1 or more.")
+                                    }
                                 }
                                 onDismiss()
                             },

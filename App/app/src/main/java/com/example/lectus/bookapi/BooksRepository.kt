@@ -1,6 +1,5 @@
 package com.example.lectus.bookapi
 
-import com.example.lectus.data.API_KEY
 import com.example.lectus.data.Book
 import com.example.lectus.data.SearchResponse
 import retrofit2.Response
@@ -31,7 +30,6 @@ class BooksRepository
             query = query,
             startIndex = startIndex,
             maxResults = 20,
-            apiKey = API_KEY,
         )
         return if (response.isSuccessful)
         {
